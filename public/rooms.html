@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salas Disponibles | Shateros 2.0</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- ================= HEADER ================= -->
+<header class="top-nav">
+    <div class="top-nav-left">
+        <div class="logo">Shateros <span>2.0</span></div>
+    </div>
+
+    <nav class="top-nav-center">
+        <a href="/">INICIO</a>
+        <a href="/rooms" class="active">EXPLORAR SALAS</a>
+        <a href="/create-room">CREAR SALA</a>
+        <a href="/members">MIEMBROS</a>
+        <a href="/help">AYUDA</a>
+    </nav>
+
+    <div class="top-nav-right">
+        <button class="btn-small btn-gray-small" id="theme-toggle" onclick="toggleTheme()">🌙</button>
+        <div id="header-menu"></div>
+    </div>
+</header>
+
+<!-- ================= CONTENIDO ================= -->
+<main class="layout-rooms">
+
+    <!-- ============== SIDEBAR DE CATEGORÍAS ============== -->
+    <aside class="rooms-sidebar card">
+        <h3>Categorías</h3>
+        <ul id="category-list" class="category-list">
+            <li class="active" data-cat="all">Todas</li>
+        </ul>
+
+        <hr>
+
+        <button class="btn-blue full-width" onclick="location.href='/create-room'">
+            ➕ Crear sala
+        </button>
+    </aside>
+
+    <!-- ============== LISTADO DE SALAS ============== -->
+    <section class="rooms-section">
+
+        <h1 class="section-title">Salas disponibles</h1>
+
+        <div id="rooms-grid" class="rooms-grid">
+            <div class="card">Cargando salas...</div>
+        </div>
+
+    </section>
+
+</main>
+
+
+<script>
+// ===================== TEMA OSCURO =====================
+function applyTheme(theme) {
+    document.documentElement.setAttribute("data-theme", theme);
+    const btn = document.getElementById("theme-toggle");
+    if (btn) btn.textContent = theme === "dark" ? "☀️" : "🌙";
+}
+
+function toggleTheme() {
+    const current = localStorage.getItem("theme") || "light";
+    const next = current === "light" ? "dark" : "light";
+    localStorage.setItem("theme", next);
+    applyTheme(next);
+}
+
+applyTheme(localStorage.getItem("theme") || "light");
+
+
+// ===================== CARGAR SESIÓN Y HEADER =====================
+async function loadSession() {
+    try {
+        const res = await fetch("/api/session");
+        const s = await res.json();
+
+        if (!s.logged) {
+            document.getElementById("header-menu").innerHTML = `
+                <button class="btn-small btn-blue-small" onclick="location.href='/login'">Iniciar sesión</button>
+                <button class="btn-small btn-green-small" onclick="location.href='/register'">Registrarse</button>
+            `;
+            return;
+        }
+
+        document.getElementById("header-menu").innerHTML = `
+            <span class="user-welcome">Hola, ${s.username}</span>
+            <button class="btn-small btn-blue-small" onclick="location.href='/profile'">Mi perfil</button>
+            ${s.isAdmin ? `<button class="btn-small btn-green-small" onclick="location.href='/admin'">Panel Admin</button>` : ""}
+            <button class="btn-small btn-red-small" onclick="logout()">Salir</button>
+        `;
+    } catch (err) {
+        console.error("Error sesión:", err);
+    }
+}
+
+async function logout() {
+    await fetch("/api/logout");
+    location.reload();
+}
+
+
+// ===================== CARGAR SALAS =====================
+let allRooms = [];
+
+async function loadRooms() {
+    try {
+        const res = await fetch("/api/rooms");
+        const data = await res.json();
+        allRooms = data;
+
+        renderCategories();
+        renderRooms("all");
+    } catch (err) {
+        console.error("Error al cargar salas:", err);
+    }
+}
+
+// ===================== CATEGORÍAS =====================
+function renderCategories() {
+    const list = document.getElementById("category-list");
+
+    const categories = [...new Set(allRooms.map(r => r.category || "General"))];
+
+    categories.forEach(cat => {
+        const li = document.createElement("li");
+        li.textContent = cat;
+        li.dataset.cat = cat;
+        li.onclick = () => renderRooms(cat);
+
+        list.appendChild(li);
+    });
+}
+
+// ===================== RENDERIZAR SALAS =====================
+function renderRooms(category) {
+    const grid = document.getElementById("rooms-grid");
+
+    document.querySelectorAll("#category-list li").forEach(li => {
+        li.classList.remove("active");
+        if (li.dataset.cat === category) li.classList.add("active");
+    });
+
+    let filtered = allRooms;
+    if (category !== "all") {
+        filtered = allRooms.filter(r => r.category === category);
+    }
+
+    if (!filtered.length) {
+        grid.innerHTML = `<div class="card">No hay salas en esta categoría.</div>`;
+        return;
+    }
+
+grid.innerHTML = filtered.map(r => `
+    <div class="room-card">
+        <img src="/icons/chat.png" class="room-icon">
+
+        <h3>${r.name}</h3>
+
+        <p class="room-category">
+            ${r.isOfficial ? "⭐ Oficial · " : ""}
+            ${r.category || "General"}
+        </p>
+
+        <p class="room-online">${r.users || 0} usuarios online</p>
+
+        <button class="btn-blue" onclick="location.href='/chat?room=${r.id}'">
+            Entrar
+        </button>
+    </div>
+`).join("");
+}
+
+
+// ===================== INIT =====================
+loadSession();
+loadRooms();
+</script>
+
+</body>
+</html>

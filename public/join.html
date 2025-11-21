@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Entrar al chat</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="join-body">
+
+    <div class="join-container">
+        <h2 class="join-title">Sala de chat</h2>
+        <div class="join-date">
+            <b id="fecha"></b>
+        </div>
+
+        <div class="join-box">
+            <label>Nick</label>
+            <input id="nick" class="join-input" placeholder="Tu nick">
+
+            <label>Sala</label>
+            <select id="sala" class="join-input">
+                <option value="1">General</option>
+                <option value="2">Tecnología</option>
+                <option value="3">Juegos</option>
+            </select>
+
+            <button class="join-btn" onclick="entrarChat()">Entrar al chat</button>
+        </div>
+    </div>
+
+<script>
+    // Fecha estilo Chateros.io
+    const fecha = new Date().toLocaleDateString("es-MX", {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric"
+    });
+    document.getElementById("fecha").textContent = fecha;
+
+    function entrarChat() {
+        const nick = document.getElementById("nick").value.trim();
+        const sala = document.getElementById("sala").value;
+
+        if (!nick) {
+            alert("Escribe un nick para entrar");
+            return;
+        }
+
+        // Guardar nick temporal (invitado)
+        localStorage.setItem("guestNick", nick);
+
+        // Enviar al chat
+        window.location.href = `chat.html?room=${sala}`;
+    }
+</script>
+
+</body>
+</html>

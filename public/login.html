@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Iniciar sesión | Shateros 2.0</title>
+<link rel="stylesheet" href="/styles.css">
+
+<style>
+/* ===== LOGIN/REGISTER BASE ===== */
+.auth-container {
+    max-width: 400px;
+    margin: 60px auto;
+    padding: 25px;
+    background: var(--card-bg);
+    box-shadow: var(--shadow);
+    border-radius: var(--radius);
+    text-align: center;
+}
+
+.auth-container h1 {
+    font-size: 26px;
+    margin-bottom: 10px;
+}
+
+.auth-container p {
+    font-size: 14px;
+    color: var(--muted);
+}
+
+.auth-input {
+    width: 100%;
+    padding: 12px;
+    margin-top: 12px;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+    font-size: 15px;
+    background: var(--input-bg);
+    color: var(--text);
+}
+
+.auth-btn {
+    width: 100%;
+    padding: 12px;
+    margin-top: 15px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    font-size: 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.25s;
+}
+
+.auth-btn:hover {
+    opacity: 0.9;
+}
+
+.auth-link {
+    margin-top: 12px;
+    display: block;
+    color: var(--primary);
+    text-decoration: none;
+}
+
+.separator {
+    margin: 20px 0;
+    height: 1px;
+    background: #e2e8f0;
+}
+
+.dark-bg {
+    background: #0f172a;
+}
+
+</style>
+</head>
+
+<body>
+
+<script>
+// Activar tema guardado
+(function() {
+    const theme = localStorage.getItem("theme") || "light";
+    document.documentElement.setAttribute("data-theme", theme);
+})();
+</script>
+
+<div class="auth-container">
+
+    <h1>Iniciar sesión</h1>
+    <p>Bienvenido de nuevo a Shateros 2.0</p>
+
+    <input id="username" class="auth-input" type="text" placeholder="Usuario">
+    <input id="password" class="auth-input" type="password" placeholder="Contraseña">
+
+    <button class="auth-btn" onclick="login()">Entrar</button>
+
+    <a href="/register" class="auth-link">¿No tienes cuenta? Regístrate aquí</a>
+
+    <div class="separator"></div>
+
+    <button class="auth-btn" style="background:#64748b;" onclick="guestLogin()">Entrar como invitado</button>
+
+</div>
+
+
+<script>
+// Login normal
+async function login() {
+    const username = document.getElementById("username").value.trim();
+    const password = document.getElementById("password").value.trim();
+
+    if (!username || !password) {
+        alert("Completa todos los campos.");
+        return;
+    }
+
+    const res = await fetch("/api/login", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({username, password})
+    });
+
+    const data = await res.json();
+    if (data.ok) location.href = "/";
+    else alert("Usuario o contraseña incorrectos.");
+}
+
+// Invitado
+async function guestLogin() {
+    await fetch("/api/guest-login", { method: "POST" });
+    location.href = "/";
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Admin | Shateros 2.0</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- ================= HEADER ================= -->
+<header class="top-nav">
+    <div class="top-nav-left">
+        <div class="logo">Shateros <span>2.0</span></div>
+    </div>
+
+    <nav class="top-nav-center">
+        <a href="/">INICIO</a>
+        <a href="/rooms">SALAS</a>
+        <a href="/members">MIEMBROS</a>
+        <a href="/help">AYUDA</a>
+    </nav>
+
+    <div class="top-nav-right">
+        <button class="btn-small btn-gray-small" id="theme-toggle" onclick="toggleTheme()">🌙</button>
+        <div id="header-menu"></div>
+    </div>
+</header>
+
+<!-- ================= LAYOUT ================= -->
+<main class="admin-layout">
+
+    <!-- ========== SIDEBAR ADMIN ========== -->
+    <aside class="admin-sidebar card">
+        <h3>Panel Admin</h3>
+
+        <ul class="admin-menu">
+            <li class="active" data-section="dashboard">📊 Dashboard</li>
+            <li data-section="users">👤 Usuarios</li>
+            <li data-section="rooms">💬 Salas</li>
+            <li data-section="categories">📂 Categorías</li>
+            <li data-section="logs">🧾 Actividad</li>
+        </ul>
+    </aside>
+
+    <!-- ========== CONTENIDO MAIN ========== -->
+    <section class="admin-content">
+
+        <!-- =================== DASHBOARD =================== -->
+        <div id="section-dashboard" class="admin-section">
+
+            <h1 class="section-title">Estadísticas Generales</h1>
+
+            <div class="admin-stats-grid">
+
+                <div class="card admin-stat">
+                    <h3>👥 Usuarios Registrados</h3>
+                    <div class="stat-number" id="stat-users">0</div>
+                </div>
+
+                <div class="card admin-stat">
+                    <h3>💬 Salas Creadas</h3>
+                    <div class="stat-number" id="stat-rooms">0</div>
+                </div>
+
+                <div class="card admin-stat">
+                    <h3>⚡ Activos Hoy</h3>
+                    <div class="stat-number" id="stat-active">0</div>
+                </div>
+
+                <div class="card admin-stat">
+                    <h3>📨 Mensajes Totales</h3>
+                    <div class="stat-number" id="stat-msgs">0</div>
+                </div>
+            </div>
+
+            <h2 class="section-title" style="margin-top: 25px;">Actividad Semanal</h2>
+            <div class="card">
+                <canvas id="activity-chart" height="120"></canvas>
+            </div>
+        </div>
+
+
+        <!-- =================== USUARIOS =================== -->
+        <div id="section-users" class="admin-section" style="display:none;">
+
+            <h1 class="section-title">Usuarios registrados</h1>
+
+            <div class="card">
+                <table class="admin-table" id="admin-users-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Usuario</th>
+                            <th>Avatar</th>
+                            <th>Última actividad</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td colspan="4">Cargando...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+
+        <!-- =================== SALAS =================== -->
+        <div id="section-rooms" class="admin-section" style="display:none;">
+            <h1 class="section-title">Salas de chat</h1>
+
+            <div class="card">
+                <table class="admin-table" id="admin-rooms-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Categoría</th>
+                            <th>Oficial</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td colspan="5">Cargando...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+
+        <!-- =================== CATEGORÍAS =================== -->
+        <div id="section-categories" class="admin-section" style="display:none;">
+            <h1 class="section-title">Categorías disponibles</h1>
+
+            <div class="card">
+                <ul id="admin-cat-list"></ul>
+            </div>
+        </div>
+
+
+        <!-- =================== LOGS =================== -->
+        <div id="section-logs" class="admin-section" style="display:none;">
+            <h1 class="section-title">Actividad del servidor</h1>
+
+            <div class="card" id="admin-logs">
+                Cargando actividad...
+            </div>
+        </div>
+
+    </section>
+
+</main>
+
+<!-- ================= SCRIPTS ================= -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+/* ============================
+   Modo oscuro del sistema
+============================ */
+function applyTheme(theme) {
+    document.documentElement.setAttribute("data-theme", theme);
+    const btn = document.getElementById("theme-toggle");
+    btn.textContent = theme === "dark" ? "☀️" : "🌙";
+}
+
+function toggleTheme() {
+    const current = localStorage.getItem("theme") || "light";
+    const next = current === "light" ? "dark" : "light";
+    localStorage.setItem("theme", next);
+    applyTheme(next);
+}
+
+applyTheme(localStorage.getItem("theme") || "light");
+
+
+/* ============================
+   Cargar sesión
+============================ */
+async function loadSession() {
+    const res = await fetch("/api/session");
+    const s = await res.json();
+
+    if (!s.logged || !s.isAdmin) {
+        location.href = "/";
+        return;
+    }
+
+    document.getElementById("header-menu").innerHTML = `
+        <span class="user-welcome">Hola, ${s.username}</span>
+        <button class="btn-small btn-blue-small" onclick="location.href='/profile'">Mi perfil</button>
+        <button class="btn-small btn-red-small" onclick="logout()">Salir</button>
+    `;
+}
+async function logout() {
+    await fetch("/api/logout");
+    location.href = "/";
+}
+
+
+/* ============================
+   Cambiar sección
+============================ */
+document.querySelectorAll(".admin-menu li").forEach(li => {
+    li.addEventListener("click", () => {
+        document.querySelectorAll(".admin-menu li").forEach(x => x.classList.remove("active"));
+        li.classList.add("active");
+
+        document.querySelectorAll(".admin-section").forEach(sec => sec.style.display = "none");
+        document.getElementById("section-" + li.dataset.section).style.display = "block";
+    });
+});
+
+
+/* ============================
+   Cargar estadísticas
+============================ */
+async function loadDashboard() {
+    const res = await fetch("/api/admin-stats");
+    const stats = await res.json();
+
+    document.getElementById("stat-users").innerText = stats.users;
+    document.getElementById("stat-rooms").innerText = stats.rooms;
+    document.getElementById("stat-active").innerText = stats.active24h;
+    document.getElementById("stat-msgs").innerText = stats.messages;
+
+    const ctx = document.getElementById("activity-chart");
+    new Chart(ctx, {
+        type: "line",
+        data: {
+            labels: stats.weekLabels,
+            datasets: [{
+                label: "Mensajes por día",
+                data: stats.weekData,
+                borderColor: "#3b82f6",
+                backgroundColor: "rgba(59,130,246,0.3)",
+                tension: 0.3,
+                fill: true
+            }]
+        }
+    });
+}
+
+
+/* ============================
+   Cargar usuarios
+============================ */
+async function loadUsers() {
+    const res = await fetch("/api/admin-users");
+    const users = await res.json();
+    const tbody = document.querySelector("#admin-users-table tbody");
+
+    tbody.innerHTML = users.map(u => `
+        <tr>
+            <td>${u.id}</td>
+            <td>${u.username}</td>
+            <td><img src="${u.avatar || '/images/default-avatar.png'}" style="width:40px;border-radius:5px;"></td>
+            <td>${u.lastSeen}</td>
+        </tr>
+    `).join("");
+}
+
+
+/* ============================
+   Cargar salas
+============================ */
+async function loadRooms() {
+    const res = await fetch("/api/rooms");
+    const rooms = await res.json();
+    const tbody = document.querySelector("#admin-rooms-table tbody");
+
+    tbody.innerHTML = rooms.map(r => `
+        <tr>
+            <td>${r.id}</td>
+            <td>${r.name}</td>
+            <td>${r.category}</td>
+            <td>${r.isOfficial ? "⭐ Sí" : "No"}</td>
+            <td>
+                <button class="btn-red-small" onclick="deleteRoom(${r.id})">Eliminar</button>
+            </td>
+        </tr>
+    `).join("");
+}
+
+async function deleteRoom(id) {
+    if (!confirm("¿Eliminar sala?")) return;
+
+    await fetch("/api/admin-delete-room?id=" + id);
+    loadRooms();
+}
+
+
+/* ============================
+   Categorías
+============================ */
+async function loadCategories() {
+    const res = await fetch("/api/admin-categories");
+    const cats = await res.json();
+
+    const list = document.getElementById("admin-cat-list");
+    list.innerHTML = cats.map(c => `<li>📌 ${c.name}</li>`).join("");
+}
+
+
+/* ============================
+   Logs / actividad
+============================ */
+async function loadLogs() {
+    const res = await fetch("/api/admin-logs");
+    const logs = await res.json();
+
+    const box = document.getElementById("admin-logs");
+    box.innerHTML = logs.map(l => `<p>• ${l}</p>`).join("");
+}
+
+
+/* ============================
+   INIT
+============================ */
+loadSession();
+loadDashboard();
+loadUsers();
+loadRooms();
+loadCategories();
+loadLogs();
+</script>
+
+</body>
+</html>

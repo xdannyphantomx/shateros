@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Shateros 2.0 – Metro Chat</title>
+  <script src="/socket.io/socket.io.js"></script>
+  <script defer src="chat.js"></script>
+  <style>
+    :root {
+      --accent: #0078d7;
+      --accent-light: #e5f1ff;
+      --bg: #f2f4f7;
+      --text: #1b1b1f;
+      --muted: #666a72;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .metro-appbar {
+      background: #1b1b1f;
+      color: white;
+      padding: 8px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .metro-title {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .metro-buttons a {
+      color: white;
+      text-decoration: none;
+      margin-left: 12px;
+      font-size: 13px;
+      opacity: .8;
+    }
+
+    .metro-buttons a:hover {
+      opacity: 1;
+    }
+
+    .metro-layout {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 0;
+      padding: 18px;
+    }
+
+    .metro-sidebar {
+      background: white;
+      border-radius: 6px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .metro-sidebar h3 {
+      font-size: 14px;
+      margin: 4px 0 8px;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--muted);
+    }
+
+    .metro-contact {
+      display: grid;
+      grid-template-columns: 8px 34px 1fr;
+      align-items: center;
+      gap: 8px;
+      padding: 6px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-bottom: 4px;
+    }
+
+    .metro-contact:hover {
+      background: var(--accent-light);
+    }
+
+    .metro-status {
+      width: 8px;
+      height: 24px;
+      border-radius: 999px;
+    }
+
+    .metro-status.online { background: #00cc6a; }
+    .metro-status.busy   { background: #ff3b30; }
+
+    .metro-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 4px;
+      object-fit: cover;
+    }
+
+    .metro-contact span {
+      font-size: 13px;
+    }
+
+    .metro-main {
+      display: flex;
+      flex-direction: column;
+      margin-left: 18px;
+    }
+
+    .metro-room-header {
+      background: white;
+      border-radius: 6px;
+      padding: 10px 16px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .metro-room-header span:nth-child(1) {
+      font-weight: 600;
+    }
+
+    .metro-room-header span:nth-child(2) {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .metro-messages {
+      flex: 1;
+      background: white;
+      border-radius: 6px;
+      padding: 12px 16px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+      overflow-y: auto;
+    }
+
+    .metro-msg {
+      margin-bottom: 10px;
+      font-size: 13px;
+    }
+
+    .metro-msg-nick {
+      font-weight: 600;
+      color: var(--accent);
+      margin-right: 6px;
+    }
+
+    .metro-msg.me .metro-msg-nick {
+      color: #ff8c00;
+    }
+
+    .metro-input-bar {
+      margin-top: 10px;
+      display: flex;
+      gap: 8px;
+    }
+
+    .metro-input-bar input {
+      flex: 1;
+      border-radius: 4px;
+      border: 1px solid #c8ccd2;
+      padding: 10px;
+      font-size: 13px;
+    }
+
+    .metro-btn-send {
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 10px 18px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .metro-btn-send:hover {
+      background: #005ea6;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="metro-appbar">
+    <div class="metro-title">Shateros 2.0 – Metro Chat</div>
+    <div class="metro-buttons">
+      <a href="chat.html?room=1">Moderno</a>
+      <a href="chat-dark-msn.html?room=1">Dark MSN</a>
+      <a href="chat-msn2009.html?room=1">MSN 2009</a>
+      <a href="rooms">Salas</a>
+    </div>
+  </header>
+
+  <main class="metro-layout">
+
+    <aside class="metro-sidebar">
+      <h3>Contactos</h3>
+
+      <div class="metro-contact">
+        <div class="metro-status online"></div>
+        <img src="icons/default.png" class="metro-avatar" alt="avatar" />
+        <span>Daniel</span>
+      </div>
+
+      <!-- Más contactos desde JS -->
+    </aside>
+
+    <section class="metro-main">
+      <div class="metro-room-header">
+        <span>#Sala General</span>
+        <span>0 usuarios conectados (demo)</span>
+      </div>
+
+      <div class="metro-messages" id="messages">
+        <!-- Mensajes reales via JS -->
+      </div>
+
+      <form id="message-form" class="metro-input-bar">
+        <input id="message-input" placeholder="Escribe un mensaje..." />
+        <button type="submit" class="metro-btn-send">Enviar</button>
+      </form>
+    </section>
+
+  </main>
+
+</body>
+</html>

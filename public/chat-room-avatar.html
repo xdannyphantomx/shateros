@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Sala MSN • Shateros 2.0</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .chat-msn {
+            display:grid;
+            grid-template-columns: 1fr 250px;
+            height: calc(100vh - 60px);
+        }
+        .messages-msn {
+            padding:20px;
+            overflow-y:auto;
+        }
+        .msg {
+            display:flex;
+            gap:12px;
+            margin-bottom:20px;
+        }
+        .msg img {
+            width:48px;
+            height:48px;
+            border-radius:50%;
+            border:2px solid #2979ff;
+        }
+        .bubble {
+            padding:14px;
+            border-radius:12px;
+            background:white;
+            box-shadow:0 3px 6px rgba(0,0,0,0.1);
+            max-width:65%;
+        }
+        .me {
+            flex-direction:row-reverse;
+        }
+        .me .bubble {
+            background:#2979ff;
+            color:white;
+        }
+        .input-msn {
+            padding:14px;
+            background:white;
+            border-top:1px solid #ddd;
+            display:flex;
+            gap:10px;
+        }
+        .input-msn input {
+            flex:1;
+            padding:10px;
+            border:1px solid #ccc;
+            border-radius:8px;
+        }
+        .userListMSN img {
+            width:32px;
+            height:32px;
+            border-radius:50%;
+        }
+    </style>
+</head>
+
+<body>
+
+<header class="top-nav">
+    <div class="top-nav-left"><div class="logo">Shateros <span>2.0</span></div></div>
+</header>
+
+<div class="chat-msn">
+
+    <div class="messages-msn" id="messages"></div>
+
+    <aside class="userlist userListMSN">
+        <h3>Usuarios</h3>
+        <ul id="users"></ul>
+    </aside>
+
+</div>
+
+<div class="input-msn">
+    <input id="msgText" placeholder="Escribe un mensaje...">
+    <button class="btn-blue" onclick="send()">Enviar</button>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="chat-msn.js"></script>
+
+</body>
+</html>

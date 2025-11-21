@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Shateros 2.0</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<!-- ===================== HEADER ===================== -->
+<header class="top-nav">
+    <div class="top-nav-left">
+        <div class="logo">Shateros <span>2.0</span></div>
+    </div>
+
+    <nav class="top-nav-center">
+        <a href="/">INICIO</a>
+        <a href="/rooms">EXPLORAR SALAS</a>
+        <a href="/create-room">CREAR SALA</a>
+        <a href="/members">MIEMBROS</a>
+        <a href="/help">AYUDA</a>
+    </nav>
+
+    <div class="top-nav-right">
+    <button class="btn-small btn-gray-small" id="theme-toggle" onclick="toggleTheme()">🌙</button>
+    <div id="header-menu"></div>
+</div>
+</header>
+
+
+<!-- ===================== LAYOUT PRINCIPAL ===================== -->
+<main class="layout">
+
+    <!-- ========== SIDEBAR AVANZADO ========== -->
+    <aside class="sidebar-advanced">
+
+        <!-- Cuenta / Estado MSN (se llena con JS) -->
+        <div class="box sidebar-account" id="sidebar-account"></div>
+
+        <!-- Crear sala -->
+        <div class="box sidebar-create">
+            <button class="btn-create-room" onclick="location.href='/create-room'">
+                ➕ Crear nueva sala
+            </button>
+        </div>
+
+        <!-- Últimas salas creadas -->
+        <div class="box sidebar-section">
+            <h3>🕓 Últimas salas creadas</h3>
+            <ul class="side-list" id="latest-rooms">
+                <li>Cargando...</li>
+            </ul>
+        </div>
+
+        <!-- Usuarios activos -->
+        <div class="box sidebar-section">
+            <h3>👥 Usuarios activos</h3>
+            <ul class="side-list" id="active-users-side">
+                <li>No hay usuarios activos</li>
+            </ul>
+        </div>
+
+        <!-- Anuncios -->
+        <div class="box sidebar-section">
+            <h3>📢 Anuncios</h3>
+            <div id="sidebar-news">Cargando anuncios...</div>
+        </div>
+
+        <!-- Menú rápido -->
+        <div class="box sidebar-section">
+            <h3>Menú</h3>
+            <ul class="side-list">
+                <li><a href="/rooms">Explorar salas</a></li>
+                <li><a href="/create-room">Crear sala</a></li>
+                <li><a href="/profile">Mi perfil</a></li>
+                <li><a href="/myrooms">Mis salas</a></li>
+            </ul>
+        </div>
+
+    </aside>
+
+
+    <!-- ===================== CONTENIDO CENTRAL ===================== -->
+    <section class="content">
+
+        <!-- HERO / BANNER PRINCIPAL -->
+        <div class="hero-banner">
+            <div class="hero-main">
+                <h1>Bienvenido a <span>Shateros 2.0</span></h1>
+                <p class="hero-text">
+                    Un chat retro moderno para conocer gente, hablar de tecnología, juegos, soporte y mucho más.
+                </p>
+
+                <div class="hero-actions">
+                    <button class="btn-view" onclick="location.href='/rooms'">Ver salas disponibles</button>
+                    <button class="btn-ghost" onclick="guestLogin()">Entrar como invitado</button>
+                </div>
+
+                <p class="hero-note">No necesitas instalar nada. Solo entra, elige una sala y empieza a platicar.</p>
+            </div>
+
+            <div class="hero-side">
+                <h3>📊 Estado general</h3>
+                <div class="hero-stats">
+                    <div class="hero-stat">
+                        <div class="hero-stat-number" id="stat-total-rooms">0</div>
+                        Salas públicas
+                    </div>
+                    <div class="hero-stat">
+                        <div class="hero-stat-number" id="stat-active-24h">0</div>
+                        Usuarios activos (24h)
+                    </div>
+                    <div class="hero-stat">
+                        <div class="hero-stat-number" id="stat-popular-rooms">0</div>
+                        Salas populares
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- BLOQUE SUPERIOR: INFORMACIÓN RÁPIDA -->
+        <h2 class="section-title">Actividad de la comunidad</h2>
+
+        <div class="info-grid home-top">
+
+            <!-- Últimos miembros -->
+            <div class="card">
+                <h3>🧑‍🤝‍🧑 Últimos miembros registrados</h3>
+                <ul id="home-latest-members" class="simple-list">
+                    <li>Aún no hay miembros registrados.</li>
+                </ul>
+            </div>
+
+            <!-- Usuarios activos -->
+            <div class="card">
+                <h3>✅ Usuarios activos (24h)</h3>
+                <ul id="home-active-users" class="simple-list">
+                    <li>No hay usuarios activos en las últimas 24 horas.</li>
+                </ul>
+            </div>
+
+            <!-- Salas populares -->
+            <div class="card">
+                <h3>🔥 Salas de chat populares</h3>
+                <ul id="home-popular-rooms" class="simple-list">
+                    <li>Todavía no hay salas populares.</li>
+                </ul>
+            </div>
+
+            <!-- Estadísticas rápidas -->
+            <div class="card stats-card" id="stats-card">
+                <h3>📈 Resumen rápido</h3>
+                <div class="stats-grid">
+                    <div>
+                        <div class="stat-number" id="stat-number-rooms">0</div>
+                        Salas creadas
+                    </div>
+                    <div>
+                        <div class="stat-number" id="stat-number-users">0</div>
+                        Miembros recientes
+                    </div>
+                    <div>
+                        <div class="stat-number" id="stat-number-active">0</div>
+                        Activos hoy
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+        <!-- BLOQUE: RECOMENDADAS -->
+        <h2 class="section-title">Salas recomendadas para ti</h2>
+        <div class="grid-rooms" id="recommended-rooms">
+            <!-- Se llena con /api/rooms -->
+        </div>
+
+
+        <!-- BLOQUE INFORMATIVO (TU CONTENIDO ORIGINAL MEJORADO) -->
+        <h2 class="section-title">Guía rápida para empezar</h2>
+
+        <div class="info-grid">
+
+            <div class="card highlight">
+                <h3>🚀 ¿Qué es Shateros 2.0?</h3>
+                <p>
+                    Es un chat público con toque retro, inspirado en MSN, pero con tecnología moderna.
+                    Ideal para hacer nuevos amigos, hablar de tecnología, gaming, soporte técnico y más.
+                </p>
+                <div class="card-actions">
+                    <button class="btn-view" onclick="location.href='/rooms'">Explorar salas</button>
+                    <button class="btn-ghost" onclick="guestLogin()">Entrar como invitado</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>⭐ CÓMO EMPEZAR</h3>
+                <ol>
+                    <li>Regístrate o entra como invitado.</li>
+                    <li>Explora todas las salas públicas.</li>
+                    <li>Entra en una y empieza a platicar.</li>
+                    <li>Si quieres, crea tu propia sala.</li>
+                </ol>
+            </div>
+
+            <div class="card">
+                <h3>💬 ¿SALAS DE CHAT GRATUITAS?</h3>
+                <p>Ambiente retro, anónimo y con buen rollo. Ideal para conocer gente y hacer amistades.</p>
+                <button class="btn-view" onclick="location.href='/rooms'">Unirme a una sala</button>
+            </div>
+
+            <div class="card">
+                <h3>🌐 COMUNIDAD</h3>
+                <p>Salas públicas, amistades, juegos, tecnología, soporte, diversión y más.</p>
+            </div>
+
+            <div class="card">
+                <h3>🔥 LIVE CHAT</h3>
+                <p>Servidores activos 24/7. Únete en cualquier momento y empieza a conversar.</p>
+            </div>
+
+            <div class="card">
+                <h3>🔧 AVISO</h3>
+                <p>Proyecto en versión beta. Algunas funciones están en prueba, pero todo funciona estable.</p>
+            </div>
+
+        </div>
+
+
+        <!-- BLOQUE: ACTIVIDAD RECIENTE (GENERADA CON LOS DATOS) -->
+        <h2 class="section-title">Actividad reciente</h2>
+
+        <div class="card activity-feed" id="activity-feed">
+            <p class="small-text">Aún no hay actividad registrada.</p>
+        </div>
+
+    </section>
+
+</main>
+
+<script src="/socket.io/socket.io.js"></script>
+
+<!-- ===================== SCRIPT DINÁMICO ===================== -->
+<script>
+// ===================== SESIÓN / HEADER / SIDEBAR =====================
+
+async function updateHeader() {
+    try {
+        const res = await fetch("/api/session");
+        const data = await res.json();
+
+        const headerRight = document.getElementById("header-menu");
+        const sidebarAccount = document.getElementById("sidebar-account");
+
+        // Sin sesión
+        if (!data.logged) {
+            headerRight.innerHTML = `
+                <button class="btn-small btn-gray-small" onclick="guestLogin()">Invitado</button>
+                <button class="btn-small btn-blue-small" onclick="location.href='/login'">Iniciar sesión</button>
+                <button class="btn-small btn-green-small" onclick="location.href='/register'">Registrarte</button>
+            `;
+
+            sidebarAccount.innerHTML = `
+                <h3>Cuenta</h3>
+                <p class="small-text">Inicia sesión o entra como invitado para comenzar a chatear.</p>
+                <button onclick="location.href='/login'" class="btn-blue full-width">Iniciar sesión</button>
+                <button onclick="location.href='/register'" class="btn-green full-width">Registrarte</button>
+                <button onclick="guestLogin()" class="btn-ghost full-width">Entrar como invitado</button>
+            `;
+            return;
+        }
+
+        // Con sesión
+        headerRight.innerHTML = `
+            <span class="user-welcome">Hola, ${data.username}</span>
+            <button class="btn-small btn-blue-small" onclick="location.href='/profile'">Mi perfil</button>
+            ${data.isAdmin ? `<button class="btn-small btn-green-small" onclick="location.href='/admin'">Panel Admin</button>` : ""}
+            <button class="btn-small btn-red-small" onclick="logout()">Salir</button>
+        `;
+
+        const savedStatus = localStorage.getItem("msnStatus") || "online";
+        const statusText = getStatusText(savedStatus);
+
+        sidebarAccount.innerHTML = `
+            <div class="account-header">
+                <img src="/images/default-avatar.png" alt="Avatar" class="sidebar-avatar">
+                <div>
+                    <h3>${data.username}</h3>
+                    <p class="msn-status" id="sidebar-status">${statusText}</p>
+                </div>
+            </div>
+
+            <div class="msn-status-buttons">
+                <button onclick="setStatus('online')" class="status-btn online">🟢</button>
+                <button onclick="setStatus('away')" class="status-btn away">🟡</button>
+                <button onclick="setStatus('busy')" class="status-btn busy">🔴</button>
+            </div>
+
+            <button onclick="location.href='/profile'" class="btn-blue full-width">Mi perfil</button>
+            <button onclick="location.href='/myrooms'" class="btn-green full-width">Mis salas</button>
+            ${data.isAdmin ? `<button onclick="location.href='/admin'" class="btn-orange full-width">Panel Admin</button>` : ""}
+            <button onclick="logout()" class="btn-red full-width">Cerrar sesión</button>
+        `;
+    } catch (err) {
+        console.error("Error cargando sesión:", err);
+    }
+}
+
+function getStatusText(type) {
+    const map = {
+        online: "🟢 Conectado",
+        away: "🟡 Ausente",
+        busy: "🔴 Ocupado"
+    };
+    return map[type] || map.online;
+}
+
+function setStatus(type) {
+    localStorage.setItem("msnStatus", type);
+    const el = document.getElementById("sidebar-status");
+    if (el) el.innerText = getStatusText(type);
+}
+
+async function logout() {
+    try {
+        await fetch("/api/logout");
+        location.reload();
+    } catch (err) {
+        console.error("Error al cerrar sesión:", err);
+    }
+}
+
+// ===================== INVITADO =====================
+
+async function guestLogin() {
+    try {
+        const res = await fetch("/api/guest-login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" }
+        });
+
+        if (res.ok) {
+            location.href = "/rooms";
+        } else {
+            alert("No se pudo iniciar como invitado. Inténtalo más tarde.");
+        }
+    } catch (err) {
+        console.error("Error en guestLogin:", err);
+    }
+}
+
+// ===================== DATOS PRINCIPALES (HOME) =====================
+
+async function loadHomeData() {
+    try {
+        const res = await fetch("/api/home-data");
+        if (!res.ok) {
+            console.warn("No se pudo cargar /api/home-data");
+            return;
+        }
+
+        const data = await res.json();
+
+        // Listas
+        renderList(
+            "home-latest-members",
+            data.latestMembers,
+            item => item.username,
+            "Aún no hay miembros registrados."
+        );
+
+        renderList(
+            "home-active-users",
+            data.activeUsers,
+            item => item.username,
+            "No hay usuarios activos en las últimas 24 horas."
+        );
+
+        renderList(
+            "home-popular-rooms",
+            data.popularRooms,
+            item => item.membersCount
+                ? `${item.name} (${item.membersCount} mensajes)`
+                : item.name,
+            "Todavía no hay salas populares."
+        );
+
+        // Stats rápidos (usamos tamaños de arrays)
+        const totalRecentUsers = (data.latestMembers || []).length;
+        const totalActive = (data.activeUsers || []).length;
+        const totalPopular = (data.popularRooms || []).length;
+
+        document.getElementById("stat-number-users").innerText = totalRecentUsers;
+        document.getElementById("stat-number-active").innerText = totalActive;
+        document.getElementById("stat-popular-rooms").innerText = totalPopular;
+
+        // Actividad reciente generada
+        buildActivityFeed(data);
+    } catch (err) {
+        console.error("Error cargando datos de inicio:", err);
+    }
+
+    // Cargar número de salas
+    try {
+        const resRooms = await fetch("/api/rooms");
+        const rooms = await resRooms.json();
+        const totalRooms = Array.isArray(rooms) ? rooms.length : 0;
+
+        document.getElementById("stat-number-rooms").innerText = totalRooms;
+        document.getElementById("stat-total-rooms").innerText = totalRooms;
+        document.getElementById("stat-active-24h").innerText =
+            document.getElementById("stat-number-active").innerText || "0";
+    } catch (err) {
+        console.error("Error cargando /api/rooms:", err);
+    }
+}
+
+/**
+ * Rellena un <ul> con elementos dinámicos.
+ */
+function renderList(listId, items, renderItem, emptyText) {
+    const ul = document.getElementById(listId);
+    if (!ul) return;
+
+    if (!items || !Array.isArray(items) || items.length === 0) {
+        ul.innerHTML = `<li>${emptyText}</li>`;
+        return;
+    }
+
+    ul.innerHTML = items
+        .slice(0, 5)
+        .map(item => `<li>${renderItem(item)}</li>`)
+        .join("");
+}
+
+// Actividad reciente (texto generado a partir de los datos)
+function buildActivityFeed(data) {
+    const feed = document.getElementById("activity-feed");
+    if (!feed) return;
+
+    const events = [];
+
+    (data.latestMembers || []).forEach(m => {
+        events.push(`🧑‍💻 Nuevo usuario registrado: <strong>${m.username}</strong>`);
+    });
+
+    (data.popularRooms || []).forEach(r => {
+        events.push(`💬 La sala <strong>${r.name}</strong> está activa con ${r.membersCount || 0} mensajes.`);
+    });
+
+    (data.activeUsers || []).forEach(u => {
+        events.push(`⚡ <strong>${u.username}</strong> ha estado activo en las últimas horas.`);
+    });
+
+    if (events.length === 0) {
+        feed.innerHTML = `<p class="small-text">Aún no hay actividad registrada.</p>`;
+        return;
+    }
+
+    feed.innerHTML = events
+        .slice(0, 8)
+        .map(e => `<p>${e}</p>`)
+        .join("");
+}
+
+// ===================== SIDEBAR: ÚLTIMAS SALAS / ACTIVOS / ANUNCIOS =====================
+
+async function loadSidebarData() {
+    try {
+        // Últimas salas
+        const lastRes = await fetch("/api/latest-rooms");
+        const lastRooms = await lastRes.json();
+        const lastList = document.getElementById("latest-rooms");
+        if (lastList) {
+            lastList.innerHTML = lastRooms.length
+                ? lastRooms.map(r => `<li><a href="/chat?room=${r.id}">${r.name}</a></li>`).join("")
+                : "<li>No hay salas creadas aún.</li>";
+        }
+
+        // Usuarios activos (5 min)
+        const activeRes = await fetch("/api/active-users");
+        const activeUsers = await activeRes.json();
+        const activeSide = document.getElementById("active-users-side");
+        if (activeSide) {
+            activeSide.innerHTML = activeUsers.length
+                ? activeUsers.map(u => `<li>${u.username}</li>`).join("")
+                : "<li>No hay usuarios activos</li>";
+        }
+
+        // Anuncios
+        const newsRes = await fetch("/api/news");
+        const news = await newsRes.json();
+        const newsBox = document.getElementById("sidebar-news");
+        if (newsBox) {
+            newsBox.innerHTML = news.map(n => `<p>• ${n}</p>`).join("");
+        }
+    } catch (err) {
+        console.error("Error en loadSidebarData:", err);
+    }
+}
+
+// ===================== SALAS RECOMENDADAS =====================
+
+async function loadRecommendedRooms() {
+    try {
+        const res = await fetch("/api/rooms");
+        const rooms = await res.json();
+
+        const container = document.getElementById("recommended-rooms");
+        if (!container) return;
+
+        if (!Array.isArray(rooms) || rooms.length === 0) {
+            container.innerHTML = `<div class="card"><p>Aún no hay salas disponibles.</p></div>`;
+            return;
+        }
+
+        // Tomamos las oficiales primero, luego el resto
+        const official = rooms.filter(r => r.isOfficial);
+        const others = rooms.filter(r => !r.isOfficial);
+        const ordered = [...official, ...others].slice(0, 4);
+
+        container.innerHTML = ordered
+            .map(r => `
+                <div class="room-card">
+                    <img src="/images/chat-bubble.png" alt="Sala">
+                    <h3>${r.name}</h3>
+                    <div class="room-topic">${r.category || "General"}</div>
+                    <div class="room-topic">
+                        ${r.isOfficial ? "⭐ Oficial" : ""} ${r.users ? `• ${r.users} online` : ""}
+                    </div>
+                    <button class="btn-view" onclick="location.href='/chat?room=${r.id}'">
+                        Entrar
+                    </button>
+                </div>
+            `)
+            .join("");
+    } catch (err) {
+        console.error("Error cargando salas recomendadas:", err);
+    }
+}
+
+// ===================== TEMA CLARO / OSCURO =====================
+function applyTheme(theme) {
+    document.documentElement.setAttribute("data-theme", theme);
+    const btn = document.getElementById("theme-toggle");
+    if (btn) btn.textContent = theme === "dark" ? "☀️" : "🌙";
+}
+
+function toggleTheme() {
+    const current = localStorage.getItem("theme") || "light";
+    const next = current === "light" ? "dark" : "light";
+    localStorage.setItem("theme", next);
+    applyTheme(next);
+}
+
+// al iniciar
+const savedTheme = localStorage.getItem("theme") || "light";
+applyTheme(savedTheme);
+
+
+// ===================== ACTIVIDAD EN VIVO =====================
+let socketIndex = null;
+
+function initActivitySocket() {
+    if (typeof io === "undefined") return;
+    socketIndex = io();
+
+    socketIndex.on("activity", (event) => {
+        const feed = document.getElementById("activity-feed");
+        if (!feed) return;
+
+        const p = document.createElement("p");
+        p.innerHTML = event.message;
+        feed.prepend(p);
+
+        // máximo 15 eventos en el feed
+        const items = feed.querySelectorAll("p");
+        if (items.length > 15) {
+            items[items.length - 1].remove();
+        }
+    });
+}
+
+
+// ===================== INIT =====================
+
+document.addEventListener("DOMContentLoaded", () => {
+    updateHeader();
+    loadHomeData();
+    loadSidebarData();
+    loadRecommendedRooms();
+    initActivitySocket();   // 👈 nuevo
+});
+
+</script>
+
+</body>
+</html>

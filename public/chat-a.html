@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Shateros 2.0 – MSN-D WebChat</title>
+
+  <!-- Estilos base de tu proyecto (opcional) -->
+  <!-- <link rel="stylesheet" href="styles.css"> -->
+
+  <!-- Estilo MSN-D -->
+  <link rel="stylesheet" href="chat-msn-a.css">
+</head>
+<body>
+
+<div class="msnD-shell">
+  <!-- Barra superior tipo ventana vieja -->
+  <header class="msnD-titlebar">
+    <div class="msnD-title-left">
+      <span class="msnD-logo"></span>
+      <span class="msnD-title-text">Shateros 2.0 WebChat</span>
+    </div>
+    <div class="msnD-title-buttons">
+      <span class="btn-min"></span>
+      <span class="btn-max"></span>
+      <span class="btn-close"></span>
+    </div>
+  </header>
+
+  <!-- Cuerpo principal -->
+  <div class="msnD-main">
+
+    <!-- Panel izquierdo: mensajes -->
+    <section class="msnD-chat-panel">
+      <!-- Mensajes del sistema / topic -->
+      <div class="msnD-system" id="roomTopic">
+        <span class="sys-prefix">The chat's topic is:</span>
+        <span class="sys-topic">Welcome to Shateros 2.0 – Sala General</span>
+      </div>
+
+      <!-- Zona de mensajes -->
+      <div class="msnD-messages" id="chatMessages">
+        <!-- Ejemplos estáticos -->
+        <div class="line sys">
+          <span class="time">[03:50p]</span>
+          <span class="text">Servidor: Has entrado a la sala <b>#General</b>.</span>
+        </div>
+
+        <div class="line msg">
+          <span class="time">[03:51p]</span>
+          <span class="nick nickC owner">danny (Owner)</span>:
+          <span class="text">bienvenidos todos 😄</span>
+        </div>
+
+        <div class="line msg">
+          <span class="time">[03:51p]</span>
+          <span class="nick nickC host">phantom (Host)</span>:
+          <span class="text">recuerden respetar el tema del chat 😉</span>
+        </div>
+
+        <div class="line msg">
+          <span class="time">[03:52p]</span>
+          <span class="nick nickC user"> invitado_123</span>:
+          <span class="text">hola a todos, soy nuevo 🙌</span>
+        </div>
+      </div>
+
+      <!-- Barra de entrada -->
+      <form class="msnD-inputbar" id="messageForm">
+        <!-- Herramientas izquierda -->
+        <div class="input-tools-left">
+          <button type="button" class="tool-btn" title="Mensaje privado (PV)">PV</button>
+          <button type="button" class="tool-btn" title="Emoticonos">😊</button>
+          <button type="button" class="tool-btn" title="Sonido / zumbido">🔔</button>
+        </div>
+
+        <!-- Campo de texto -->
+        <input
+          type="text"
+          id="messageInput"
+          class="msnD-input"
+          placeholder="Escribe tu mensaje aquí…"
+          autocomplete="off"
+        />
+
+        <!-- Color de texto -->
+        <input
+          type="color"
+          id="colorPicker"
+          class="color-picker"
+          title="Color del texto"
+          value="#0000ff"
+        />
+
+        <!-- Botón enviar -->
+        <button type="submit" class="send-btn">Send</button>
+      </form>
+    </section>
+
+    <!-- Panel derecho: usuarios / info sala -->
+    <aside class="msnD-right-panel">
+      <!-- Info sala -->
+      <div class="room-box">
+        <div class="room-title">Sala actual</div>
+        <div class="room-name" id="roomName">#General</div>
+
+        <div class="room-link-block">
+          <label for="roomLink">Link sala:</label>
+          <input
+            type="text"
+            id="roomLink"
+            class="room-link"
+            value="https://shateros.local/chat?room=General"
+            readonly
+          />
+        </div>
+
+        <div class="room-pass-block" id="roomPasswordBox">
+          <label>Contraseña:</label>
+          <span id="roomPassword">/pass 12345</span>
+          <small class="only-admin">(visible solo para staff)</small>
+        </div>
+      </div>
+
+      <!-- Lista de usuarios -->
+      <div class="users-box">
+        <div class="users-header">
+          <span>Users chatting</span>
+          <span class="users-count">7 people chatting</span>
+        </div>
+
+        <ul class="msnD-users" id="userList">
+          <!-- Ejemplos estáticos -->
+          <li class="user-row role-admin">
+            <span class="staff-icon">🛡</span>
+            <span class="nickText">Admin_Latino (Admin)</span>
+          </li>
+
+          <li class="user-row role-sysop">
+            <span class="staff-icon">🛡</span>
+            <span class="nickText">Sysop_Copetusha (Sysop)</span>
+          </li>
+
+          <li class="user-row role-guide">
+            <span class="staff-icon">🛡</span>
+            <span class="nickText">Guide_Support (Guide)</span>
+          </li>
+
+          <li class="user-row role-owner">
+            <span class="owner-icon">👑</span>
+            <span class="nickText">danny (Owner)</span>
+          </li>
+
+          <li class="user-row role-host">
+            <span class="host-icon">⭐</span>
+            <span class="nickText">Phantom (Host)</span>
+          </li>
+
+          <li class="user-row role-user">
+            <span class="user-icon">👤</span>
+            <span class="nickText">Guest_123</span>
+          </li>
+
+          <li class="user-row role-spect">
+            <span class="spect-icon">👁️</span>
+            <span class="nickText">Viewer_anon</span>
+          </li>
+        </ul>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<!-- Aquí luego podrás conectar tu JS real
+<script src="/socket.io/socket.io.js"></script>
+<script src="/chat.js"></script>
+-->
+
+</body>
+</html>

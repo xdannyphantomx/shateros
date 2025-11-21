@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Shateros 2.0 – MSN 2009</title>
+  <script src="/socket.io/socket.io.js"></script>
+  <script defer src="chat.js"></script>
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, sans-serif;
+      background: #b0c8f5;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .msn-window {
+      width: 880px;
+      height: 540px;
+      background: #e7f0ff;
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.35);
+      display: flex;
+      flex-direction: column;
+      border: 1px solid #7fa0d9;
+    }
+
+    .msn2009-header {
+      height: 46px;
+      background: linear-gradient(to bottom, #eaf3ff 0, #c1d5fa 45%, #97b8f1 100%);
+      border-bottom: 1px solid #8ca8de;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 12px;
+    }
+
+    .msn2009-header-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .msn2009-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 4px;
+      border: 1px solid #7d97cf;
+      background: #fff;
+      object-fit: cover;
+    }
+
+    .msn2009-nick {
+      font-weight: 600;
+      color: #1d3f7a;
+    }
+
+    .msn2009-status {
+      font-size: 11px;
+      color: #526794;
+    }
+
+    .msn2009-header-right a {
+      font-size: 11px;
+      color: #1d3f7a;
+      text-decoration: none;
+      margin-left: 10px;
+    }
+
+    .msn-body {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 220px;
+    }
+
+    .msn-chat-area {
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid #b2c4e4;
+    }
+
+    .msn-messages {
+      flex: 1;
+      padding: 10px;
+      font-size: 13px;
+      background: white;
+      overflow-y: auto;
+    }
+
+    .msn-msg-line {
+      margin-bottom: 6px;
+      white-space: pre-wrap;
+    }
+
+    .msn-nick-blue {
+      color: #2b4cb0;
+      font-weight: 600;
+    }
+
+    .msn-nick-green {
+      color: #2a8a3a;
+      font-weight: 600;
+    }
+
+    .msn-right-panel {
+      background: #f4f7ff;
+      padding: 8px;
+      font-size: 12px;
+    }
+
+    .msn-right-panel h4 {
+      margin: 4px 0;
+      font-size: 12px;
+      color: #41588e;
+    }
+
+    .msn-input-area {
+      border-top: 1px solid #b2c4e4;
+      background: #f5f7ff;
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .msn-input-area textarea {
+      resize: none;
+      height: 70px;
+      border-radius: 3px;
+      border: 1px solid #a5b9e0;
+      font-family: inherit;
+      font-size: 13px;
+      padding: 6px;
+      background: #ffffff;
+    }
+
+    .msn-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      color: #4c5f88;
+    }
+
+    .msn-actions button {
+      border: 1px solid #7f9bd9;
+      border-radius: 2px;
+      padding: 4px 8px;
+      font-size: 11px;
+      background: linear-gradient(to bottom,#fdfefe,#dbe7fb);
+      cursor: pointer;
+      margin-left: 4px;
+    }
+
+    .msn-actions button:hover {
+      background: #f4f7ff;
+    }
+
+    .msn-send-bar {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 4px;
+    }
+
+    .msn-send-btn {
+      border: 1px solid #7f9bd9;
+      border-radius: 2px;
+      padding: 5px 16px;
+      font-size: 12px;
+      font-weight: 600;
+      background: linear-gradient(to bottom,#fdfefe,#dbe7fb);
+      cursor: pointer;
+      color: #1f386b;
+    }
+
+    .msn-send-btn:hover {
+      background: #f2f5ff;
+    }
+  </style>
+</head>
+<body>
+
+<div class="msn-window">
+  <!-- Header -->
+  <div class="msn2009-header">
+    <div class="msn2009-header-left">
+      <img src="icons/default.png" class="msn2009-avatar" alt="avatar" />
+      <div>
+        <div class="msn2009-nick">Daniel</div>
+        <div class="msn2009-status">Disponible – Shateros 2.0</div>
+      </div>
+    </div>
+    <div class="msn2009-header-right">
+      <a href="chat.html?room=1">Vista moderna</a>
+      <a href="chat-dark-msn.html?room=1">Dark MSN</a>
+      <a href="rooms">Salas</a>
+    </div>
+  </div>
+
+  <!-- Cuerpo -->
+  <div class="msn-body">
+    <!-- Chat -->
+    <div class="msn-chat-area">
+      <div class="msn-messages" id="messages">
+        <!-- Ejemplo estático; tus mensajes reales los agrega chat.js -->
+        <div class="msn-msg-line">
+          <span class="msn-nick-blue">Daniel dice:</span> Hola, bienvenido a Shateros 2.0 😄
+        </div>
+        <div class="msn-msg-line">
+          <span class="msn-nick-green">Tú dices:</span> ¡Se siente como Messenger 2009!
+        </div>
+      </div>
+
+      <!-- Input -->
+      <form id="message-form" class="msn-input-area">
+        <textarea id="message-input" placeholder="Escribe un mensaje aquí…"></textarea>
+
+        <div class="msn-toolbar">
+          <div>Fuente: Segoe UI 10pt</div>
+          <div class="msn-actions">
+            <button type="button">☺ Emoticonos</button>
+            <button type="button">🎵 Zumbido</button>
+          </div>
+        </div>
+
+        <div class="msn-send-bar">
+          <button type="submit" class="msn-send-btn">Enviar</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Panel derecho -->
+    <aside class="msn-right-panel">
+      <h4>Contacto</h4>
+      <p>Daniel<br><span style="color:#6b7baa;">Shateros 2.0</span></p>
+
+      <h4>Estado</h4>
+      <p>Disponible</p>
+
+      <h4>Información</h4>
+      <p>Esta es una vista inspirada en Windows Live Messenger 2009 para tu sala de chat.</p>
+    </aside>
+  </div>
+</div>
+
+</body>
+</html>

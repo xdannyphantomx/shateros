@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Mis Salas • Shateros 2.0</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<!-- HEADER -->
+<header class="top-nav">
+    <div class="top-nav-left">
+        <div class="logo">Shateros <span>2.0</span></div>
+    </div>
+
+    <nav class="top-nav-center">
+        <a href="/">INICIO</a>
+        <a href="/rooms">EXPLORAR SALAS</a>
+        <a href="/create-room">CREAR SALA</a>
+        <a href="/members">MIEMBROS</a>
+        <a href="/help">AYUDA</a>
+    </nav>
+
+    <div class="top-nav-right" id="header-menu"></div>
+</header>
+
+
+<main class="layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar-modern">
+
+        <div class="box sidebar-account" id="sidebar-account"></div>
+
+        <div class="box sidebar-menu">
+            <h3>Menú</h3>
+            <ul class="list">
+                <li><a href="/rooms">Unirte a una sala</a></li>
+                <li><a href="/create-room">Crear tu canal</a></li>
+                <li><a href="/profile">Mi perfil</a></li>
+                <li><a href="/myrooms" class="active">Mis salas</a></li>
+            </ul>
+        </div>
+
+    </aside>
+
+    <!-- CONTENIDO -->
+    <section class="content">
+
+        <h2 class="title-section">Mis Salas</h2>
+
+        <div class="info-grid" id="myrooms-container">
+            <div class="card">
+                <p>Cargando tus salas...</p>
+            </div>
+        </div>
+
+    </section>
+
+</main>
+
+<script>
+// ===================== SESIÓN Y HEADER =====================
+async function updateHeader() {
+    const res = await fetch("/api/session");
+    const data = await res.json();
+
+    const headerRight = document.getElementById("header-menu");
+    const sidebarAccount = document.getElementById("sidebar-account");
+
+    if (!data.logged) {
+        headerRight.innerHTML = `
+            <button class="btn-small btn-blue-small" onclick="location.href='/login'">Iniciar sesión</button>
+            <button class="btn-small btn-green-small" onclick="location.href='/register'">Registro</button>
+        `;
+        return;
+    }
+
+    headerRight.innerHTML = `
+        <span class="user-welcome">Hola, ${data.username}</span>
+        <button class="btn-small btn-blue-small" onclick="location.href='/profile'">Mi perfil</button>
+        <button class="btn-small btn-green-small" onclick="location.href='/admin'">Panel Admin</button>
+        <button class="btn-small btn-red-small" onclick="logout()">Salir</button>
+    `;
+
+    sidebarAccount.innerHTML = `
+        <h3>${data.username}</h3>
+        <p class="small-text">${data.isAdmin ? "Administrador" : "Usuario"}</p>
+        <button class="btn-blue full-width" onclick="location.href='/profile'">Mi perfil</button>
+        <button class="btn-green full-width" onclick="location.href='/myrooms'">Mis salas</button>
+        ${data.isAdmin ? `<button class="btn-orange full-width" onclick="location.href='/admin'">Panel Admin</button>` : ""}
+        <button class="btn-red full-width" onclick="logout()">Cerrar sesión</button>
+    `;
+}
+
+async function logout() {
+    await fetch("/api/logout");
+    location.reload();
+}
+
+// ===================== CARGAR MIS SALAS =====================
+async function loadMyRooms() {
+    const container = document.getElementById("myrooms-container");
+
+    const res = await fetch("/api/myrooms");
+    const data = await res.json();
+
+    if (!data.ok) {
+        container.innerHTML = `
+            <div class="card">No pudimos cargar tus salas.</div>
+        `;
+        return;
+    }
+
+    if (data.rooms.length === 0) {
+        container.innerHTML = `
+            <div class="card">
+                <p>No tienes salas creadas ni en las que participes.</p>
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = data.rooms
+        .map(room => `
+            <div class="card">
+                <h3>${room.name}</h3>
+                <p>${room.category}</p>
+                <p>${room.isOfficial ? "⭐ Oficial" : ""}</p>
+                <button class="btn-view" onclick="goToRoom(${room.id})">Entrar</button>
+            </div>
+        `)
+        .join("");
+}
+
+function goToRoom(id) {
+    location.href = "/chat?room=" + id;
+}
+
+// ===================== INIT =====================
+updateHeader();
+loadMyRooms();
+</script>
+
+</body>
+</html>

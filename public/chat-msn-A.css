@@ -1,0 +1,353 @@
+/* ============================
+   MSN-D – WebChat 2010 Style
+   Prototipo visual
+   ============================ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 16px;
+  font-family: "Segoe UI", Tahoma, sans-serif;
+  font-size: 13px;
+  background: #004b8f url("https://i.imgur.com/2R3RQD0.jpg") center/cover fixed;
+  color: #000;
+}
+
+/* Shell principal (ventana) */
+.msnD-shell {
+  width: 1024px;
+  max-width: 100%;
+  margin: 0 auto;
+  border: 1px solid #28518a;
+  box-shadow: 0 0 16px rgba(0, 0, 0, 0.5);
+  background: #dfe9f7;
+}
+
+/* Barra de título estilo XP */
+.msnD-titlebar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 8px;
+  background: linear-gradient(90deg, #2459a6, #4a8ae0);
+  color: #fff;
+  font-size: 12px;
+}
+
+.msnD-title-left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.msnD-logo {
+  width: 16px;
+  height: 16px;
+  background: url("https://i.imgur.com/j0K9yqI.png") center/contain no-repeat;
+}
+
+.msnD-title-text {
+  font-weight: 600;
+}
+
+.msnD-title-buttons span {
+  display: inline-block;
+  width: 18px;
+  height: 14px;
+  margin-left: 2px;
+  border: 1px solid #0f234a;
+  background: #f4f4f4;
+  cursor: pointer;
+}
+
+.msnD-title-buttons .btn-close {
+  background: #e05050;
+}
+
+/* Main split: mensajes izquierda, usuarios derecha */
+.msnD-main {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) 260px;
+  min-height: 540px;
+}
+
+/* Panel izquierdo (mensajes) */
+.msnD-chat-panel {
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid #9cb6d7;
+  background: #ffffff;
+}
+
+/* Mensajes sistema / topic */
+.msnD-system {
+  padding: 6px 8px;
+  border-bottom: 1px solid #c5d4ea;
+  background: #f3f6fb;
+  font-family: "Consolas", "Courier New", monospace;
+  font-size: 12px;
+}
+
+.sys-prefix {
+  color: #046f33;
+  font-weight: 600;
+}
+
+.sys-topic {
+  color: #003399;
+}
+
+/* Zona mensajes */
+.msnD-messages {
+  flex: 1;
+  padding: 8px;
+  overflow-y: auto;
+  background: #ffffff;
+}
+
+/* Cada línea de chat */
+.line {
+  font-family: "Consolas", "Courier New", monospace;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.line + .line {
+  margin-top: 2px;
+}
+
+.line .time {
+  color: #999;
+  margin-right: 4px;
+}
+
+.line .nick {
+  font-weight: 700;
+  margin-right: 2px;
+}
+
+.line.sys .text {
+  color: #555;
+}
+
+/* Colores por nick (rollos) */
+.nickC.owner {
+  color: #ff6600;
+}
+
+.nickC.host {
+  color: #1688e5;
+}
+
+.nickC.admin {
+  color: #e62828;
+}
+
+.nickC.user {
+  color: #000;
+}
+
+/* Barra de entrada */
+.msnD-inputbar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 8px;
+  border-top: 1px solid #9cb6d7;
+  background: #e4edf9;
+}
+
+.input-tools-left {
+  display: flex;
+  gap: 3px;
+}
+
+.tool-btn {
+  border: 1px solid #7f9db9;
+  background: #f5f5f5;
+  padding: 2px 6px;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.tool-btn:hover {
+  background: #e1edf8;
+}
+
+.msnD-input {
+  flex: 1;
+  border: 1px solid #7f9db9;
+  padding: 3px 6px;
+  font-size: 12px;
+  outline: none;
+}
+
+.msnD-input:focus {
+  border-color: #28518a;
+  box-shadow: 0 0 0 1px #a6c5f7;
+}
+
+.color-picker {
+  width: 32px;
+  height: 24px;
+  padding: 0;
+  border: 1px solid #7f9db9;
+  background: #fff;
+  cursor: pointer;
+}
+
+.send-btn {
+  border: 1px solid #28518a;
+  background: linear-gradient(#f5f5f5, #d6e4f7);
+  padding: 3px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #003366;
+  cursor: pointer;
+}
+
+.send-btn:hover {
+  background: linear-gradient(#ffffff, #e3f0ff);
+}
+
+/* Panel derecho (usuarios + info sala) */
+.msnD-right-panel {
+  display: flex;
+  flex-direction: column;
+  background: #e3ebf8;
+}
+
+/* Caja info sala */
+.room-box {
+  padding: 8px;
+  border-bottom: 1px solid #9cb6d7;
+  background: #f2f5ff;
+}
+
+.room-title {
+  font-size: 11px;
+  color: #555;
+}
+
+.room-name {
+  font-weight: 700;
+  color: #003399;
+  margin-bottom: 6px;
+}
+
+.room-link-block,
+.room-pass-block {
+  margin-bottom: 6px;
+  font-size: 11px;
+}
+
+.room-link {
+  width: 100%;
+  font-size: 11px;
+  padding: 2px 4px;
+  border: 1px solid #9cb6d7;
+  background: #fff;
+}
+
+.only-admin {
+  display: block;
+  color: #666;
+}
+
+/* Caja usuarios */
+.users-box {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.users-header {
+  padding: 4px 8px;
+  border-bottom: 1px solid #9cb6d7;
+  background: #d2e0f7;
+  font-size: 11px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.users-count {
+  color: #333;
+}
+
+.msnD-users {
+  list-style: none;
+  margin: 0;
+  padding: 4px 0;
+  overflow-y: auto;
+  flex: 1;
+  background: #ffffff;
+}
+
+.user-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 6px;
+  font-size: 12px;
+  cursor: default;
+}
+
+.user-row:nth-child(odd) {
+  background: #f6f6ff;
+}
+
+.user-row:hover {
+  background: #dfe9ff;
+}
+
+/* Iconitos de rol */
+.staff-icon,
+.owner-icon,
+.host-icon,
+.user-icon,
+.spect-icon {
+  width: 16px;
+  text-align: center;
+}
+
+/* Colores por rol (barra derecha) */
+.role-owner .nickText {
+  color: #ff6600;
+  font-weight: 700;
+}
+
+.role-host .nickText {
+  color: #1688e5;
+  font-weight: 700;
+}
+
+.role-admin .nickText,
+.role-sysop .nickText,
+.role-guide .nickText {
+  color: #c00000;
+  font-weight: 700;
+}
+
+.role-user .nickText {
+  color: #000;
+}
+
+.role-spect .nickText {
+  color: #666;
+  font-style: italic;
+}
+
+/* Responsivo mínimo (solo para que no se rompa en pantallas pequeñas) */
+@media (max-width: 900px) {
+  .msnD-main {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .msnD-right-panel {
+    border-top: 1px solid #9cb6d7;
+  }
+}

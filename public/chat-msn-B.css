@@ -1,0 +1,89 @@
+body {
+padding: 12px;
+border-right: 2px solid #b7c4ff;
+background: #ffffff;
+}
+
+
+.msnB-messages {
+height: 360px;
+background: #ffffff;
+border: 1px solid #b7c4ff;
+padding: 8px;
+overflow-y: auto;
+font-size: 14px;
+}
+
+
+.msg-line {
+margin-bottom: 5px;
+}
+
+
+.nick {
+font-weight: bold;
+}
+
+
+.nick.owner { color: #ff9900; }
+.nick.host { color: #1a73e8; }
+.nick.admin { color: #c62828; }
+.nick.user { color: #333; }
+.nick.spect { color: #777; }
+
+
+/* INPUT BAR */
+.msnB-inputbar {
+display: flex;
+gap: 10px;
+margin-top: 10px;
+}
+
+
+.msnB-inputbar input {
+flex: 1;
+padding: 6px;
+border: 1px solid #9bb1ff;
+}
+
+
+.msnB-btn {
+background: #1f3ccf;
+color: white;
+border: none;
+padding: 6px 12px;
+cursor: pointer;
+}
+
+
+/* USERS RIGHT */
+.msnB-users {
+background: #f5f6ff;
+padding: 10px;
+border-left: 2px solid #1f3ccf;
+}
+
+
+.msnB-users h3 {
+margin: 0 0 10px;
+color: #1f3ccf;
+}
+
+
+.msnB-users ul {
+list-style: none;
+padding: 0;
+margin: 0;
+}
+
+
+.msnB-users li {
+padding: 6px 0;
+border-bottom: 1px solid #d6dbff;
+}
+
+
+.role {
+margin-right: 6px;
+font-size: 16px;
+}

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Crear sala - Shateros 2.0</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- 🔵 TOP NAV -->
+<div class="top-nav">
+    <div class="logo">Shateros <span>2.0</span></div>
+    
+    <div class="top-nav-center">
+        <a href="index.html">INICIO</a>
+        <a href="rooms.html">EXPLORAR SALAS</a>
+        <a class="active" href="create-room.html">CREAR SALA</a>
+        <a href="members.html">MIEMBROS</a>
+        <a href="help.html">AYUDA</a>
+    </div>
+
+    <div class="top-nav-right" id="headerUserArea"></div>
+</div>
+
+
+
+<!-- 🔵 CONTENT -->
+<div class="page-container">
+    <div class="content-area">
+
+        <div class="box" style="max-width: 600px; margin: auto;">
+            <h2 class="title-section">Crear nueva sala</h2>
+
+            <form id="createRoomForm" class="modern-form">
+                
+                <label>Nombre de la sala</label>
+                <input type="text" id="roomName" required>
+
+                <label>Descripción</label>
+                <textarea id="roomDescription"></textarea>
+
+                <label>Categoría</label>
+                <select id="roomCategory">
+                    <option>General</option>
+                    <option>Tecnología</option>
+                    <option>Juegos</option>
+                    <option>+18</option>
+                </select>
+
+                <label>Contraseña (opcional)</label>
+                <input type="password" id="roomPassword" placeholder="Déjalo vacío si es pública">
+
+                <button class="btn-green w-100" type="submit">Crear sala</button>
+
+            </form>
+
+        </div>
+
+    </div>
+</div>
+
+
+<script>
+document.getElementById("createRoomForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const data = {
+        name: document.getElementById("roomName").value,
+        description: document.getElementById("roomDescription").value,
+        category: document.getElementById("roomCategory").value,
+        password: document.getElementById("roomPassword").value || null
+    };
+
+    const response = await fetch("/api/create-room", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(data)
+    });
+
+    const result = await response.json();
+
+  if (result.success) {
+    alert("Sala creada correctamente");
+
+    // Si el servidor devolvió el ID de sala, entra directo al chat
+    if (result.roomId) {
+        window.location.href = `/chat?room=${result.roomId}`;
+    } else {
+        // Si no devuelve roomId, regresar a la lista
+        window.location.href = "rooms.html";
+    }
+
+} else {
+    alert("Error: " + result.message);
+}
+});
+</script>
+
+</body>
+</html>

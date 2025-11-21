@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Registro | Shateros 2.0</title>
+<link rel="stylesheet" href="/styles.css">
+
+<style>
+/* Reusa los estilos del login para mantener coherencia */
+.auth-container {
+    max-width: 400px;
+    margin: 60px auto;
+    padding: 25px;
+    background: var(--card-bg);
+    box-shadow: var(--shadow);
+    border-radius: var(--radius);
+    text-align: center;
+}
+
+.auth-input {
+    width: 100%;
+    padding: 12px;
+    margin-top: 12px;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+    font-size: 15px;
+    background: var(--input-bg);
+    color: var(--text);
+}
+
+.auth-btn {
+    width: 100%;
+    padding: 12px;
+    margin-top: 15px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    font-size: 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.25s;
+}
+
+.auth-link {
+    margin-top: 12px;
+    display: block;
+    color: var(--primary);
+    text-decoration: none;
+}
+
+.separator {
+    margin: 20px 0;
+    height: 1px;
+    background: #e2e8f0;
+}
+</style>
+</head>
+
+<body>
+
+<script>
+// Activar tema guardado
+(function() {
+    const theme = localStorage.getItem("theme") || "light";
+    document.documentElement.setAttribute("data-theme", theme);
+})();
+</script>
+
+<div class="auth-container">
+
+    <h1>Crear una cuenta</h1>
+    <p>Únete a Shateros 2.0</p>
+
+    <input id="username" class="auth-input" type="text" placeholder="Usuario">
+    <input id="password" class="auth-input" type="password" placeholder="Contraseña">
+    <input id="password2" class="auth-input" type="password" placeholder="Confirmar contraseña">
+
+    <button class="auth-btn" onclick="registerUser()">Registrarme</button>
+
+    <a href="/login" class="auth-link">¿Ya tienes cuenta? Inicia sesión</a>
+
+</div>
+
+<script>
+async function registerUser() {
+    const username = document.getElementById("username").value.trim();
+    const pw1 = document.getElementById("password").value.trim();
+    const pw2 = document.getElementById("password2").value.trim();
+
+    if (!username || !pw1 || !pw2) return alert("Completa todos los campos.");
+    if (pw1 !== pw2) return alert("Las contraseñas no coinciden.");
+    if (username.length < 3) return alert("El usuario debe tener mínimo 3 caracteres.");
+
+    const res = await fetch("/api/register", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({username, password: pw1})
+    });
+
+    const data = await res.json();
+    if (data.ok) {
+        alert("Cuenta creada correctamente.");
+        location.href = "/";
+    } else {
+        alert("Ese nombre de usuario ya existe.");
+    }
+}
+</script>
+
+</body>
+</html>

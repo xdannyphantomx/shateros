@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Shateros 2.0 – Dark MSN</title>
+  <script src="/socket.io/socket.io.js"></script>
+  <script defer src="chat.js"></script>
+  <style>
+    :root {
+      --bg-main: #060712;
+      --bg-panel: #111320;
+      --bg-input: #181a2b;
+      --accent: #4f8cff;
+      --accent-soft: #24345b;
+      --text-primary: #f5f7ff;
+      --text-secondary: #a4aac6;
+      --danger: #ff4f6a;
+      --success: #45d07c;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", system-ui, sans-serif;
+      background: radial-gradient(circle at top, #1b2340 0, #050510 55%);
+      color: var(--text-primary);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .dark-header {
+      height: 46px;
+      background: linear-gradient(90deg, #20263f, #101325);
+      border-bottom: 1px solid #2b3356;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 14px;
+      color: #e3e7ff;
+      font-size: 14px;
+    }
+
+    .dark-header-left {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .dark-header-title {
+      font-weight: 600;
+    }
+
+    .dark-header-right a {
+      text-decoration: none;
+      color: #d1d7ff;
+      background: #2b3250;
+      padding: 5px 10px;
+      border-radius: 4px;
+      font-size: 12px;
+      margin-left: 4px;
+    }
+
+    .dark-header-right a:hover {
+      background: #3b4673;
+    }
+
+    .chat-root {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      background: var(--bg-main);
+    }
+
+    /* Panel de contactos */
+    .contacts-panel {
+      background: var(--bg-panel);
+      border-right: 1px solid #272b44;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .contacts-title {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+
+    .contact-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-bottom: 4px;
+      transition: background .15s, transform .08s;
+    }
+
+    .contact-item:hover {
+      background: #1d2239;
+      transform: translateY(-1px);
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      border: 2px solid #050510;
+    }
+
+    .status-online { background: var(--success); }
+    .status-busy   { background: var(--danger); }
+    .status-away   { background: #ffc857; }
+
+    .avatar-small {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1px solid #353b63;
+    }
+
+    .contact-text {
+      display: flex;
+      flex-direction: column;
+      font-size: 13px;
+    }
+
+    .contact-nick {
+      font-weight: 500;
+    }
+
+    .contact-status {
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+
+    /* Área de chat */
+    .chat-wrapper {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .chat-topic {
+      padding: 8px 14px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      background: linear-gradient(to right, #151933, #101325);
+      border-bottom: 1px solid #262b48;
+    }
+
+    .messages-container {
+      flex: 1;
+      padding: 14px;
+      overflow-y: auto;
+      background: radial-gradient(circle at top left, #151a33 0, #050510 55%);
+    }
+
+    .msg-row {
+      margin-bottom: 10px;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .msg-meta {
+      color: var(--text-secondary);
+      font-size: 11px;
+      margin-bottom: 2px;
+    }
+
+    .msg-nick {
+      font-weight: 600;
+      color: #8fb2ff;
+    }
+
+    .msg-content {
+      display: inline-block;
+      background: #151a2b;
+      border-radius: 6px;
+      padding: 6px 9px;
+      border: 1px solid #242f55;
+    }
+
+    .msg-row.me .msg-content {
+      background: #243764;
+      border-color: #355ee0;
+    }
+
+    .msg-row.me .msg-nick {
+      color: #ffd76b;
+    }
+
+    /* Barra de envío */
+    .input-bar {
+      background: var(--bg-input);
+      border-top: 1px solid #262b48;
+      padding: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .input-bar textarea {
+      flex: 1;
+      resize: none;
+      height: 48px;
+      border-radius: 6px;
+      border: 1px solid #343a5b;
+      background: #0b0f1e;
+      color: var(--text-primary);
+      padding: 8px;
+      font-family: inherit;
+      font-size: 13px;
+    }
+
+    .btn-send {
+      background: var(--accent);
+      border: none;
+      color: white;
+      padding: 10px 18px;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      box-shadow: 0 0 0 1px #20325f;
+      transition: background .15s, transform .08s;
+    }
+
+    .btn-send:hover {
+      background: #3a6cff;
+      transform: translateY(-1px);
+    }
+  </style>
+</head>
+<body>
+
+  <header class="dark-header">
+    <div class="dark-header-left">
+      <span>💬</span>
+      <span class="dark-header-title">Shateros 2.0 – Dark MSN</span>
+    </div>
+    <div class="dark-header-right">
+      <a href="chat.html?room=1">Moderno</a>
+      <a href="chat-room-avatar.html?room=1">MSN Claro</a>
+      <a href="rooms">Salas</a>
+    </div>
+  </header>
+
+  <div class="chat-root">
+    <!-- Panel de contactos -->
+    <aside class="contacts-panel">
+      <div class="contacts-title">Contactos</div>
+
+      <div class="contact-item">
+        <div class="status-dot status-online"></div>
+        <img src="icons/default.png" class="avatar-small" alt="avatar">
+        <div class="contact-text">
+          <span class="contact-nick">Daniel</span>
+          <span class="contact-status">Disponible</span>
+        </div>
+      </div>
+
+      <!-- Aquí puedes renderizar más contactos vía JS -->
+    </aside>
+
+    <!-- Chat -->
+    <section class="chat-wrapper">
+      <div class="chat-topic">
+        Tema de la sala: <strong>#General</strong> – Bienvenido a Dark MSN.
+      </div>
+
+      <div class="messages-container" id="messages">
+        <!-- Mensajes se agregan aquí mediante chat.js -->
+      </div>
+
+      <form id="message-form" class="input-bar">
+        <textarea id="message-input" placeholder="Escribe un mensaje y pulsa Enter…"></textarea>
+        <button type="submit" class="btn-send">Enviar</button>
+      </form>
+    </section>
+  </div>
+
+</body>
+</html>

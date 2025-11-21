@@ -1,0 +1,113 @@
+body {
+    margin: 0;
+    font-family: "Segoe UI", Arial;
+    background: linear-gradient(135deg, #eef3ff, #dce5ff);
+}
+
+/* CONTENEDOR GENERAL */
+.msnE-container {
+    display: flex;
+    height: 100vh;
+}
+
+/* USUARIOS DERECHA */
+.msnE-users {
+    width: 260px;
+    background: #fff;
+    border-left: 3px solid #3455dd;
+    box-shadow: -4px 0px 15px rgba(0,0,0,0.1);
+    padding: 15px;
+    overflow-y: auto;
+}
+
+.msnE-title {
+    font-size: 17px;
+    font-weight: bold;
+    color: #3455dd;
+    margin-bottom: 10px;
+}
+
+.msnE-users ul {
+    list-style: none;
+    padding: 0;
+}
+
+.msnE-users li {
+    margin-bottom: 9px;
+    font-size: 15px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #e3e8ff;
+}
+
+/* ROLES */
+.nick { font-weight: bold; }
+.nick.owner { color: #ff8c00; }
+.nick.host { color: #1e88e5; }
+.nick.admin { color: #d83434; }
+.nick.guide { color: #8a2be2; }
+.nick.user { color: #333; }
+.nick.spect { color: #777; }
+
+/* CHAT */
+.msnE-chat {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 15px;
+}
+
+/* TOPIC */
+.msnE-topic {
+    background: #3455dd;
+    color: white;
+    padding: 10px;
+    border-radius: 6px;
+    margin-bottom: 12px;
+    font-weight: 500;
+    box-shadow: 0px 4px 10px rgba(0,0,0,0.15);
+}
+
+/* CUADRO MENSAJES */
+.msnE-box {
+    flex: 1;
+    overflow-y: auto;
+    background: white;
+    border-radius: 6px;
+    padding: 12px;
+    border: 2px solid #3455dd;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.06);
+}
+
+/* BURBUJA TIPO MSN */
+.msg {
+    margin-bottom: 8px;
+    font-size: 15px;
+    padding: 7px;
+    background: #f4f6ff;
+    border-radius: 5px;
+    border-left: 4px solid #3455dd;
+}
+
+/* INPUT */
+.msnE-inputbox {
+    margin-top: 12px;
+    display: flex;
+    gap: 10px;
+}
+
+.msnE-inputbox input {
+    flex: 1;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #95a7ff;
+}
+
+.msnE-inputbox button {
+    background: #3455dd;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+}

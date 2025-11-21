@@ -1,0 +1,1213 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Chat | Shateros 2.0</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" href="/styles.css">
+
+  <style>
+    /* ==============================
+       CONTENEDOR GENERAL RETRO MSN
+       ============================== */
+    .retro-chat-page {
+      background-color: #dfdfdf;
+      min-height: calc(100vh - var(--header-h));
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 10px;
+      font-family: "Tahoma", "Verdana", sans-serif;
+      font-size: 12px;
+    }
+
+    .retro-shell {
+     width: 100%;
+     max-width: 2000px;
+      display: flex;
+      flex-direction: column;
+      border: 1px solid #8c8c8c;
+      box-shadow: 0 0 18px rgba(0, 0, 0, 0.35);
+      background-color: #cfcfcf;
+    }
+
+    /* CABECERA VIOLETA MSN */
+    .retro-msn-header {
+      background: linear-gradient(to right, #6d3f7c, #8a5c99);
+      height: 46px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 12px;
+      color: #ffffff;
+      border-bottom: 2px solid #4a2a54;
+    }
+
+    .retro-logo {
+      font-weight: bold;
+      font-size: 20px;
+      font-style: italic;
+    }
+    .retro-logo span {
+      font-weight: normal;
+    }
+
+    .retro-room-info {
+      font-size: 11px;
+      text-align: right;
+    }
+    .retro-room-info .room-label {
+      display: block;
+    }
+    .retro-room-info .room-users {
+      opacity: 0.9;
+    }
+
+/* ===============================
+   PV – Ventanas estilo MSN
+=============================== */
+.pv-window {
+  width: 280px;
+  height: 360px;
+  position: absolute;
+  background: #ffffff;
+  border: 2px solid #6d3f7c;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 0 12px rgba(0,0,0,0.4);
+  font-family: 'Tahoma', sans-serif;
+  overflow: hidden;
+  z-index: 9999;
+}
+
+.pv-header {
+  background: linear-gradient(to right, #6d3f7c, #8a5c99);
+  padding: 6px;
+  color: white;
+  font-weight: bold;
+  cursor: move;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+}
+
+.pv-close {
+  cursor: pointer;
+  padding: 0 6px;
+  font-weight: bold;
+}
+
+.pv-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 6px;
+  background: #f4f4f4;
+  font-size: 12px;
+}
+
+.pv-input {
+  display: flex;
+  padding: 6px;
+  background: #e3d4eb;
+}
+
+.pv-input input {
+  flex: 1;
+  padding: 4px;
+  border: 1px solid #7a4a8a;
+}
+
+.pv-input button {
+  margin-left: 4px;
+  padding: 4px 8px;
+  background: #c0c0c0;
+  border: 2px solid #ffffff;
+  border-style: outset;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.pv-input button:active {
+  border-style: inset;
+}
+.status-dot {
+  font-size: 10px;
+  margin-right: 4px;
+}
+
+.status-online { color: #00c200; }
+.status-away { color: #e9c600; }
+.status-busy { color: #ff3a3a; }
+.status-dnd  { color: #c200c2; }
+
+
+
+    /* CONTENEDOR CENTRAL: MENSAJES + LISTA DE USUARIOS */
+    .retro-chat-container {
+      flex: 1;
+      display: flex;
+      padding: 5px;
+      gap: 5px;
+      background-color: #f1f1f1;
+    }
+
+    /* ÁREA DE MENSAJES (IZQUIERDA) */
+    .retro-message-area {
+      flex: 1;
+      background: #ffffff;
+      border: 2px solid #999999;
+      border-style: inset;
+      padding: 8px;
+      overflow-y: auto;
+      font-family: "Arial", sans-serif;
+    }
+
+    .sys-msg {
+      margin-bottom: 4px;
+      color: green;
+      font-size: 12px;
+    }
+
+    .sys-msg.error {
+      color: red;
+    }
+
+    .sys-msg.topic {
+      color: teal;
+    }
+
+    .chat-line {
+      margin-bottom: 2px;
+      font-size: 12px;
+      white-space: normal;
+    }
+
+    .chat-line.me {
+      background-color: #f3e3ff;
+      border-radius: 3px;
+      padding: 1px 3px;
+    }
+
+    .chat-line .nick {
+      font-weight: bold;
+      margin-right: 3px;
+    }
+
+    .chat-line .msg-text {
+      word-wrap: break-word;
+    }
+
+    /* Colores de nicks por rol estilo IRC/MSN */
+    .nickC.owner { color: #ff6600; }  /* Dueño */
+    .nickC.host  { color: #0046ff; }  /* Host */
+    .nickC.admin { color: #e62828; }  /* Admin rojo */
+    .nickC.user  { color: #000000; }  /* Usuario normal */
+    .nickC.spect { color: #666666; }  /* Espectador */
+
+    /* LISTA DE USUARIOS (DERECHA) */
+    .retro-user-panel {
+      width: 300px;
+      background: #ffffff;
+      border: 2px solid #999999;
+      border-style: inset;
+      display: flex;
+      flex-direction: column;
+      font-family: "Arial", sans-serif;
+    }
+
+    .retro-room-name {
+      background-color: #d4d4d4;
+      padding: 5px;
+      font-weight: bold;
+      border-bottom: 1px solid #999999;
+    }
+
+    .retro-room-count {
+      padding: 3px 5px;
+      border-bottom: 1px solid #cccccc;
+      font-size: 11px;
+    }
+
+    .retro-users {
+      padding: 5px;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .retro-user-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-bottom: 2px;
+      cursor: pointer;
+      font-size: 12px;
+      padding: 1px 2px;
+      border-radius: 2px;
+    }
+
+    .retro-user-item:hover {
+      background-color: #eeeeee;
+    }
+
+    .retro-user-role-badge {
+      width: 16px;
+      text-align: center;
+    }
+
+    /* BARRA DE INPUT (ABAJO) */
+    .retro-input-bar {
+      height: 40px;
+      background-color: #6d3f7c;
+      display: flex;
+      align-items: center;
+      padding: 5px 8px;
+      gap: 6px;
+      border-top: 1px solid #4a2a54;
+    }
+
+    .retro-input-bar input[type="text"] {
+      flex: 1;
+      height: 24px;
+      border: 2px solid #999999;
+      border-style: inset;
+      padding-left: 6px;
+      font-size: 12px;
+      font-family: "Tahoma", "Verdana", sans-serif;
+    }
+
+    .retro-input-bar input[type="color"] {
+      width: 40px;
+      height: 24px;
+      border: 2px solid #999999;
+      border-style: inset;
+      padding: 0;
+      cursor: pointer;
+      background: #ffffff;
+    }
+
+    .retro-input-bar button {
+      height: 28px;
+      min-width: 80px;
+      border: 2px solid #ffffff;
+      background: #c0c0c0;
+      font-weight: bold;
+      cursor: pointer;
+      border-style: outset;
+      font-size: 12px;
+    }
+
+    .retro-input-bar button:active {
+      border-style: inset;
+    }
+
+    /* Menú flotante admin (usamos el que ya tienes en styles.css pero lo adaptamos un poco) */
+    .user-menu {
+      position: absolute;
+      display: none;
+      min-width: 160px;
+      background: #ffffff;
+      border: 1px solid #28518a;
+      box-shadow: 0 0 10px rgba(0,0,0,0.4);
+      padding: 4px;
+      font-size: 12px;
+      z-index: 999;
+    }
+
+    .user-menu-header {
+      font-weight: 600;
+      padding: 4px;
+      border-bottom: 1px solid #d0d7ff;
+      margin-bottom: 4px;
+    }
+
+    .user-menu button {
+      width: 100%;
+      border: none;
+      background: #f3f6ff;
+      padding: 4px;
+      text-align: left;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    .user-menu button:hover {
+      background: #dfe9ff;
+    }
+
+    @media (max-width: 900px) {
+      .retro-shell {
+        max-width: 100%;
+      }
+      .retro-chat-container {
+        flex-direction: column;
+      }
+      .retro-user-panel {
+        width: 100%;
+        max-height: 160px;
+      }
+    }
+.pvNotification {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #6d3f7c;
+    color: white;
+    padding: 10px 14px;
+    border-radius: 8px;
+    box-shadow: 0 0 12px rgba(0,0,0,0.4);
+    font-size: 12px;
+    opacity: 0;
+    animation: fadeNotif 3s forwards;
+}
+
+@keyframes fadeNotif {
+    0% { opacity: 0; transform: translateY(10px); }
+    10% { opacity: 1; transform: translateY(0); }
+    90% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+/* ===============================
+   PV – Ventanas estilo MSN
+=============================== */
+.pv-window {
+  width: 280px;
+  height: 360px;
+  position: absolute;
+  background: #ffffff;
+  border: 2px solid #6d3f7c;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 0 12px rgba(0,0,0,0.4);
+  font-family: 'Tahoma', sans-serif;
+  overflow: hidden;
+}
+
+.pv-header {
+  background: linear-gradient(to right, #6d3f7c, #8a5c99);
+  padding: 6px;
+  color: white;
+  font-weight: bold;
+  cursor: move;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+}
+
+.pv-close {
+  cursor: pointer;
+  padding: 0 6px;
+  font-weight: bold;
+}
+.pv-min {
+  cursor: pointer;
+  padding: 0 6px;
+  font-weight: bold;
+}
+
+.pv-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 6px;
+  background: #f4f4f4;
+  font-size: 12px;
+}
+
+.pv-input {
+  display: flex;
+  padding: 6px;
+  background: #e3d4eb;
+}
+
+.pv-input input {
+  flex: 1;
+  padding: 4px;
+  border: 1px solid #7a4a8a;
+}
+
+.pv-input button {
+  margin-left: 4px;
+  padding: 4px 8px;
+  background: #c0c0c0;
+  border: 2px solid #ffffff;
+  border-style: outset;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.pv-input button:active {
+  border-style: inset;
+}
+
+  </style>
+</head>
+
+<body>
+
+  <header class="top-nav">
+    <div class="top-nav-left">
+      <div class="logo">Shateros <span>2.0</span></div>
+    </div>
+    <nav class="top-nav-center">
+      <a href="/">INICIO</a>
+      <a href="/rooms" class="active">SALAS</a>
+    </nav>
+
+<select id="statusSelector" onchange="changeStatus()" class="status-select">
+  <option value="online">Disponible</option>
+  <option value="away">Ausente</option>
+  <option value="busy">Ocupado</option>
+  <option value="dnd">No molestar</option>
+</select>
+  </header>
+
+  <main class="retro-chat-page">
+    <div class="retro-shell">
+
+      <div class="retro-msn-header">
+        <div class="retro-logo">
+          msn. <span>Chat</span>
+        </div>
+        <div class="retro-room-info">
+          <span class="room-label" id="header-room-name">Sala</span>
+          <span class="room-users" id="header-room-users">0 people chatting</span>
+        </div>
+      </div>
+
+      <div class="retro-chat-container">
+        <section class="retro-message-area" id="messages">
+          </section>
+
+        <aside class="retro-user-panel">
+          <div class="retro-room-name" id="side-room-name">room</div>
+          <div class="retro-room-count" id="side-room-count">0 people chatting</div>
+          <div class="retro-users" id="users-list">
+            </div>
+        </aside>
+      </div>
+
+      <div class="retro-input-bar">
+        <input id="messageInput" type="text" placeholder="Escribe un mensaje...">
+        <input type="color" id="chatColorPicker" title="Color de tus mensajes">
+        <button id="sendBtn" type="button">Send</button>
+      </div>
+    </div>
+  </main>
+
+  <div id="user-menu" class="user-menu"></div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+
+    let username = "";
+    let avatarUrl = "";
+    let userRole = "user";
+    let userColor = "#000000";
+
+    let currentRoomUsers = [];
+    let selectedUser = null;
+
+    const urlParams = new URLSearchParams(location.search);
+    const roomId = urlParams.get("room") || "General";
+
+    // =========================
+    //  SESIÓN
+    // =========================
+    async function loadSession() {
+      const r = await fetch("/api/session");
+      const d = await r.json();
+      if (!d.logged) {
+        // De momento solo usuarios registrados pueden entrar al chat
+        location.href = "/login";
+        return;
+      }
+      username  = d.username;
+      avatarUrl = d.avatarUrl;
+      userRole  = d.role || "user";
+      userColor = d.color || "#000000";
+    }
+
+// =========================
+//  MENSAJES EN PANTALLA
+// =========================
+function addSystemMessage(text, type = "info") {
+  const messages = document.getElementById("messages");
+  if (!messages) return;
+
+  const div = document.createElement("div");
+  div.classList.add("sys-msg");
+  if (type === "error") div.classList.add("error");
+  if (type === "topic") div.classList.add("topic");
+  div.textContent = text;
+
+  messages.appendChild(div);
+  messages.scrollTop = messages.scrollHeight;
+}
+
+function addMessage(user, text, options = {}) {
+  const {
+    role = "user",
+    color = "#000000",
+    isOwn = false
+  } = options;
+
+  const messages = document.getElementById("messages");
+  if (!messages) return;
+
+  const line = document.createElement("div");
+  line.classList.add("chat-line");
+  if (isOwn) line.classList.add("me");
+
+  const roleClass =
+    role === "admin" ? "admin" :
+    role === "host"  ? "host"  :
+    role === "owner" ? "owner" :
+    role === "spect" ? "spect" : "user";
+
+  line.innerHTML = `
+    <span class="nick nickC ${roleClass}" style="color:${color}">
+      ${user}
+    </span>
+    <span class="msg-text">${msnParse(text)}</span>
+  `;
+
+  messages.appendChild(line);
+  messages.scrollTop = messages.scrollHeight;
+}
+
+// =====================================
+// FUNCIÓN PARA VER LA CONTRASEÑA DE OWNER
+// =====================================
+async function checkRoomPassword() {
+    try {
+        const res = await fetch(`/api/get-room-info?roomId=${roomId}`);
+        const data = await res.json();
+
+        if (data.password) {
+            addSystemMessage(
+                `🔐 Esta sala tiene contraseña. Para ser owner usa: /pass ${data.password}`,
+                "topic"
+            );
+        }
+    } catch (err) {
+        console.error("Error al obtener info de sala", err);
+    }
+}
+    // =========================
+    //  INFO DE SALA (HEADER + LATERAL)
+    // =========================
+    function updateRoomHeader(userCount = 0) {
+      const headerName = document.getElementById("header-room-name");
+      const headerUsers = document.getElementById("header-room-users");
+      const sideRoomName = document.getElementById("side-room-name");
+      const sideRoomCount = document.getElementById("side-room-count");
+
+      const label = roomId ? `Sala #${roomId}` : "Sala General";
+
+      if (headerName) headerName.textContent = label;
+      if (sideRoomName) sideRoomName.textContent = label;
+
+      const countText = `${userCount} people chatting`;
+      if (headerUsers) headerUsers.textContent = countText;
+      if (sideRoomCount) sideRoomCount.textContent = countText;
+    }
+
+    // =========================
+    //  CARGAR MENSAJES HISTÓRICOS
+    // =========================
+    async function loadHistory() {
+      try {
+        const r = await fetch(`/api/get-messages?roomId=${encodeURIComponent(roomId)}`);
+        const data = await r.json();
+        if (!Array.isArray(data)) return;
+
+        data.forEach(m => {
+          addMessage(m.username, m.message, {
+            role: "user",
+            color: "#000000",
+            isOwn: m.username === username
+          });
+        });
+      } catch (err) {
+        console.error("Error al cargar historial:", err);
+      }
+    }
+
+// ============================
+// Mostrar PASS secreto al creador
+// ============================
+fetch(`/api/get-room-info?roomId=${roomId}`)
+    .then(r => r.json())
+    .then(info => {
+        if (info.password) {
+            // Mensaje visible solo para él
+            addSystemMessage(
+                `⚠ Bienvenido. Usa /pass ${info.password} para convertirte en OWNER de esta sala.`,
+                "topic"
+            );
+        }
+    });
+
+    // =========================
+    //  ENVIAR MENSAJE
+    // =========================
+    async function sendCurrentMessage() {
+      const input = document.getElementById("messageInput");
+      if (!input) return;
+
+      const text = input.value.trim();
+      if (!text) return;
+
+      // Guardar en BD
+      fetch("/api/send-message", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          roomId,
+          username,
+          message: text
+        })
+      }).catch(() => {});
+
+      // Emitir en tiempo real
+      socket.emit("sendMessage", {
+        roomId,
+        username,
+        message: text,
+        avatar: avatarUrl,
+        role: userRole,
+        color: userColor
+      });
+
+      input.value = "";
+    }
+
+// ELIMINADO: Se eliminó el bloque de código duplicado de 'socket.on("pvMessage", ...)'
+// y las funciones 'sendPV' y 'addPVMessage' que ya existen al final del archivo.
+
+let dragPV_active = false;
+let dragPV_offsetX = 0;
+let dragPV_offsetY = 0;
+let dragPV_id = "";
+
+function dragPV(e, id) {
+    dragPV_active = true;
+    dragPV_id = id;
+
+    const box = document.getElementById(id);
+    // Verificar si box existe antes de acceder a sus propiedades
+    if (!box) {
+        dragPV_active = false;
+        return;
+    }
+
+    dragPV_offsetX = e.clientX - box.offsetLeft;
+    dragPV_offsetY = e.clientY - box.offsetTop;
+    
+    // Esto asegura que la posición se mueva con el cursor,
+    // y si la posición original era 'fixed', la nueva posición será absoluta dentro del viewport.
+    box.style.position = 'fixed'; 
+
+    document.onmousemove = dragPV_move;
+    document.onmouseup = () => { 
+        dragPV_active = false; 
+        document.onmousemove = null; // Limpiar listeners
+        document.onmouseup = null;
+    };
+}
+
+function dragPV_move(e) {
+    if (!dragPV_active) return;
+    const box = document.getElementById(dragPV_id);
+    if (!box) return; // Seguridad extra
+    
+    box.style.left = `${e.clientX - dragPV_offsetX}px`;
+    box.style.top = `${e.clientY - dragPV_offsetY}px`;
+}
+
+// =========================
+//  CERRAR VENTANA PV
+// =========================
+function closePV(id) {
+    const win = document.getElementById(id);
+    if (win) win.remove();
+}
+
+function showPvNotification(from, msg) {
+    // Si usas showPvToast al final del archivo, esta función es redundante
+    // y debe ser ignorada.
+    /*
+    const notif = document.createElement("div");
+    notif.className = "pvNotification";
+    notif.innerHTML = `<b>${from}</b>: ${msg}`;
+
+    document.body.appendChild(notif);
+
+    setTimeout(() => notif.remove(), 3000);
+    */
+}
+
+function minPV(id) {
+  const win = document.getElementById(id);
+  const msgs = win.querySelector(".pv-messages");
+  const input = win.querySelector(".pv-input");
+
+  if (win.dataset.min === "1") {
+    msgs.style.display = "block";
+    input.style.display = "flex";
+    win.style.height = "360px";
+    win.dataset.min = "0";
+  } else {
+    msgs.style.display = "none";
+    input.style.display = "none";
+    win.style.height = "40px";
+    win.dataset.min = "1";
+  }
+}
+function changeStatus() {
+    const st = document.getElementById("statusSelector").value;
+    socket.emit("changeStatus", st);
+}
+
+    // =========================
+    //  SOCKET.IO
+    // =========================
+    socket.on("receiveMessage", msg => {
+      addMessage(msg.username, msg.message, {
+        role: msg.role || "user",
+        color: msg.role === "guest" ? "#777777" : (msg.color || "#000000"),
+        isOwn: msg.username === username
+      });
+    });
+
+/* ============================
+   MENSAJES DEL SERVIDOR (SYSTEM)
+================================ */
+socket.on("systemMessage", msg => {
+    if (!msg) return;
+
+    // Puede venir como objeto o como texto
+    if (typeof msg === "string") {
+        addSystemMessage(msg, "info");
+        return;
+    }
+
+    // Mensajes estructurados
+    addSystemMessage(msg.text || "", msg.type || "info");
+});
+
+    socket.on("roomUsers", users => {
+      currentRoomUsers = users || [];
+
+      updateRoomHeader(currentRoomUsers.length);
+
+      const list = document.getElementById("users-list");
+      if (!list) return;
+
+      list.innerHTML = "";
+
+      currentRoomUsers.forEach((u, i) => {
+        const roleIcon = roleBadge(u.role);
+        const div = document.createElement("div");
+        div.className = "retro-user-item";
+        // CORRECCIÓN: Pasar solo el nombre de usuario ('${u.username}')
+        div.setAttribute("onclick", `openPVWindow('${u.username}')`);
+        let displayName = u.username;
+
+if (u.role === "guest") {
+    displayName += " (Guest)";
+}
+
+div.innerHTML = `
+  <span class="retro-user-role-badge">${roleIcon}</span>
+<span class="status-dot status-${u.status || "online"}">●</span>
+  <span style="color:${u.role === "guest" ? "#777" : "inherit"}">
+    ${displayName}
+  </span>
+`;
+        list.appendChild(div);
+      });
+    });
+
+    socket.on("kicked", () => {
+      alert("Has sido expulsado de la sala.");
+      location.href = "/rooms";
+    });
+
+    // =========================
+    //  ROLES
+    // =========================
+    function roleBadge(r) {
+    if (r === "admin") return "🛡";
+    if (r === "host")  return "⭐";
+    if (r === "owner") return "👑";
+    if (r === "guest") return "👤";
+    if (r === "spect") return "👁️";
+    return "👤";
+}
+
+    // =========================
+    //  MENÚ FLOTANTE DE USUARIO
+    // =========================
+    window.openUserMenu = function (evt, index) {
+      evt.stopPropagation();
+      const u = currentRoomUsers[index];
+      if (!u || u.username === username) return;
+if (u.role === "guest") return; // invitados no tienen menú
+
+      selectedUser = u;
+      const menu = document.getElementById("user-menu");
+      if (!menu) return;
+
+      menu.innerHTML = `
+        <div class="user-menu-header">${roleBadge(u.role)} ${u.username}</div>
+        <button onclick="setHost()">⭐ Dar host</button>
+        <button onclick="removeHost()">❗ Quitar host</button>
+        <button onclick="kickUser()">🚫 Expulsar</button>
+        <button onclick="banUser()">⛔ Banear</button>
+      `;
+
+      menu.style.left = evt.pageX + "px";
+      menu.style.top  = evt.pageY + "px";
+      menu.style.display = "block";
+    };
+
+    document.addEventListener("click", () => {
+      const menu = document.getElementById("user-menu");
+      if (menu) menu.style.display = "none";
+    });
+
+    // =========================
+    //  ACCIONES ADMIN
+    // =========================
+    async function postAdmin(url, body) {
+      try {
+        await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body)
+        });
+      } catch (err) {
+        console.error("Error admin:", err);
+      }
+    }
+
+    window.setHost = function () {
+      if (!selectedUser) return;
+      postAdmin("/api/admin/set-host", { username: selectedUser.username });
+    };
+
+    window.removeHost = function () {
+      if (!selectedUser) return;
+      postAdmin("/api/admin/remove-host", { username: selectedUser.username });
+    };
+
+    window.kickUser = function () {
+      if (!selectedUser) return;
+      postAdmin("/api/admin/kick-user", { socketId: selectedUser.id, roomId });
+    };
+
+    window.banUser = function () {
+      if (!selectedUser) return;
+      postAdmin("/api/admin/ban-user", { username: selectedUser.username, roomId });
+    };
+
+// =========================
+//  COLOR DE MENSAJE (Guest bloqueado)
+// =========================
+const colorPicker = document.getElementById("chatColorPicker");
+
+if (colorPicker) {
+
+  // 🔒 Si es invitado → color picker desactivado
+  if (userRole === "guest") {
+    colorPicker.disabled = true;
+    colorPicker.style.opacity = "0.4";
+    colorPicker.style.cursor = "not-allowed";
+  }
+
+  // 🎨 Usuarios normales sí pueden cambiar de color
+  colorPicker.addEventListener("change", async (e) => {
+
+    // Si es invitado, ignorar completamente
+    if (userRole === "guest") return;
+
+    userColor = e.target.value || "#000000";
+
+    try {
+      await fetch("/api/setColor", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ color: userColor })
+      });
+    } catch (err) {
+      console.error("Error setColor:", err);
+    }
+  });
+}
+
+    // =========================
+    //  EVENTOS INPUT
+    // =========================
+    document.getElementById("sendBtn").onclick = sendCurrentMessage;
+document.getElementById("messageInput").addEventListener("keydown", (e) => {
+    if (e.key !== "Enter") return;
+    
+    const text = e.target.value.trim();
+
+    // Si escribe /pass contraseña
+    if (text.startsWith("/pass ")) {
+        const pass = text.replace("/pass ", "").trim();
+        socket.emit("checkPass", {
+            roomId,
+            user: username,
+            pass
+        });
+        e.target.value = "";
+        return;
+    }
+
+    sendCurrentMessage();
+});
+    // =========================
+    //  INIT
+    // =========================
+    (async () => {
+      await loadSession();
+
+      // Mensajes del sistema tipo MSN
+      addSystemMessage("Please wait, connecting to server...");
+      addSystemMessage("Connected!", "error");
+      addSystemMessage("MOTD: Bienvenido a Shateros 2.0 – chat retro MSN.", "info");
+      addSystemMessage(
+        "The chat's topic is: Welcome to the nostalgia room",
+        "topic"
+      );
+
+      updateRoomHeader(0);
+
+  // =========================
+//  UNIRSE A LA SALA (CORREGIDO)
+// =========================
+socket.emit("joinRoom", {
+    roomId,
+    username,
+    avatar: avatarUrl || null,
+    role: userRole || "user",
+    color: userColor || "#000000"
+});
+// Mostrar contraseña al creador
+checkRoomPassword();
+      // Cargar historial
+      await loadHistory();
+    })();
+
+  </script>
+
+<audio id="pvSound" src="/sounds/pv.wav" preload="auto"></audio>
+
+<script>
+/* ==========================================================
+   REPRODUCIR SONIDO PV
+========================================================== */
+function playPvSound() {
+    const snd = document.getElementById("pvSound");
+    if (snd) snd.play().catch(()=>{});
+}
+
+// ================================
+// MSN – Emojis clásicos
+// ================================
+const msnEmojis = {
+  ":)": "/emojis/smile.gif",
+  ";)": "/emojis/wink.gif",
+  ":D": "/emojis/bigsmile.gif",
+  ":P": "/emojis/tongue.gif",
+  ":'(": "/emojis/cry.gif",
+  ":O": "/emojis/surprise.gif",
+};
+
+function msnParse(text) {
+  if (!text) return "";
+  let html = text;
+  for (let key in msnEmojis) {
+    html = html.replaceAll(key, `<img src="${msnEmojis[key]}" style="width:18px;height:18px;">`);
+  }
+  return html;
+}
+
+/* ==========================================================
+   ABRIR VENTANA PRIVADA (REVISADA)
+========================================================== */
+function openPVWindow(fromUser, avatar, text) {
+    // Si se llama con un objeto de usuario (desde la lista), extraemos el nombre.
+    let targetUser;
+    if (typeof fromUser === 'object' && fromUser !== null && fromUser.username) {
+        targetUser = fromUser.username;
+    } else if (typeof fromUser === 'string') {
+        targetUser = fromUser;
+    } else {
+        return; // Argumento no válido
+    }
+
+    if (targetUser === username) {
+        return;
+    }
+
+    playPvSound();
+    
+    // Si ya existe la ventana
+    let win = document.getElementById("pv_"+targetUser);
+
+    if (!win) {
+        win = document.createElement("div");
+        win.id = "pv_"+targetUser;
+        win.className = "pv-window";
+        
+        // El onmousedown ya no es necesario aquí si se usa 'position: fixed'
+        // con 'bottom: 20px; right: 20px;' como contenedor.
+        // Pero si quieres que sea draggable:
+        // win.style.position = 'fixed'; 
+        // win.style.left = '50%';
+        // win.style.top = '50%';
+        // win.style.transform = 'translate(-50%, -50%)';
+
+        win.innerHTML = `
+            <div class="pv-header" onmousedown="dragPV(event, 'pv_${targetUser}')">
+                <span>Chat con ${targetUser}</span>
+                <div style="display:flex; gap:10px;">
+  <span class="pv-min" onclick="minPV('pv_${targetUser}')">_</span>
+  <span class="pv-close" onclick="this.parentElement.parentElement.remove()">X</span>
+</div>
+            </div>
+            <div class="pv-messages" id="pvMsgs_${targetUser}"></div>
+            <div class="pv-input">
+                <input id="pvInput_${targetUser}" type="text" placeholder="Escribe..." />
+                <button onclick="sendPvMessage('${targetUser}')">Send</button>
+            </div>
+        `;
+        document.body.appendChild(win); // Lo añadimos al body para arrastrar
+        
+        // Centrar la nueva ventana
+        win.style.position = 'fixed'; 
+        win.style.left = '50%';
+        win.style.top = '50%';
+        win.style.transform = 'translate(-50%, -50%)';
+    }
+
+    // Agregar mensaje recibido/enviado (el 'targetUser' en este contexto es el EMISOR del mensaje)
+    const msgs = document.getElementById("pvMsgs_"+targetUser);
+    if (msgs && text) {
+        msgs.innerHTML += `<div><b>${targetUser}:</b> ${msnParse(text)}</div>`;
+        msgs.scrollTop = msgs.scrollHeight;
+    }
+}
+
+/* ==========================================================
+   ENVIAR PV DESDE UNA VENTANA
+========================================================== */
+function sendPvMessage(toUser){
+    const input = document.getElementById("pvInput_"+toUser);
+    const msg = input.value.trim();
+    if(!msg) return;
+    input.value = "";
+
+    // *** CORRECCIÓN 1: El cliente envía el evento correcto (pvMessage) ***
+    socket.emit("pvMessage", {
+        to: toUser,
+        from: username,
+        text: msg,
+        avatar: avatarUrl,
+        role: userRole
+    });
+
+    // Mostrar mensaje propio
+    const msgs = document.getElementById("pvMsgs_"+toUser);
+    msgs.innerHTML += `<div><b>Yo:</b> ${msnParse(msg)}</div>`; // <- ¡Añadir el mensaje propio aquí!
+    msgs.scrollTop = msgs.scrollHeight;
+}
+
+// =====================================
+// MSN – Título parpadeante
+// =====================================
+let blinkInterval = null;
+let originalTitle = document.title;
+
+function startBlink(from) {
+  stopBlink();
+  let toggle = false;
+  blinkInterval = setInterval(() => {
+    document.title = toggle ? `Nuevo mensaje de ${from}` : originalTitle;
+    toggle = !toggle;
+  }, 900);
+}
+
+function stopBlink() {
+  if (blinkInterval) {
+    clearInterval(blinkInterval);
+    blinkInterval = null;
+    document.title = originalTitle;
+  }
+}
+
+window.addEventListener("focus", stopBlink);
+
+
+/* ==========================================================
+   SOCKET: RECIBIR PV
+========================================================== */
+// *** CORRECCIÓN 2: El cliente escucha el evento correcto (pvMessage) ***
+socket.on("pvMessage", data=>{
+    openPVWindow(data.from, data.avatar, data.text);
+    showPvToast(`Nuevo mensaje de ${data.from}`);
+    startBlink(data.from);
+});
+/* ==========================================================
+   NOTIFICACIÓN TIPO MSN
+========================================================== */
+function showPvToast(text){
+    const box = document.createElement("div");
+    box.className = "pv-toast";
+    box.textContent = text;
+
+    box.style.position = "fixed";
+    box.style.bottom = "20px";
+    box.style.left = "20px";
+    box.style.padding = "10px 16px";
+    box.style.background = "#6d3f7c";
+    box.style.color = "#fff";
+    box.style.borderRadius = "6px";
+    box.style.boxShadow = "0 0 10px rgba(0,0,0,0.4)";
+    box.style.zIndex = 99999;
+    box.style.opacity = 1;
+    box.style.transition = "opacity 1s";
+
+    document.body.appendChild(box);
+
+    setTimeout(()=>{
+        box.style.opacity = 0;
+        setTimeout(()=> box.remove(), 1500);
+    },3000);
+}
+
+
+// ============================
+// RESPUESTA DE PASSWORD
+// ============================
+socket.on("passResult", data => {
+    if (data.ok) {
+        addSystemMessage("✔ Contraseña correcta. Ahora eres OWNER.", "info");
+    } else {
+        addSystemMessage("❌ Contraseña incorrecta.", "error");
+    }
+});
+</script>
+
+</body>
+</html>
